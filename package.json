@@ -76,6 +76,8 @@
     "access": "public"
   },
   "dependencies": {
-    "react": "^18.2.0"
+    "@xmanscript/utils": "^1.1.1",
+    "react": "^18.2.0",
+    "yup": "^1.2.0"
   }
 }
