@@ -1,22 +1,20 @@
 {
-  "name": "@xmanscript/utils",
+  "name": "@xmanscript/useform",
   "version": "1.0.0",
-  "description": "Complex utility functions package with 20+ utility functions.",
+  "description": "Yet another useForm hook to confuse developers.",
   "repository": {
     "type": "git",
-    "url": "https://github.com/**.git"
+    "url": "https://github.com/laxmanpokhrel/xmanscript-useform.git"
   },
   "keywords": [
-    "utils",
-    "comples",
-    "complex utilities",
-    "utilities",
-    "light weight"
+    "useForm",
+    "With Context",
+    "useForm With Context"
   ],
   "bugs": {
-    "url": "https://github.com/**/issues"
+    "url": "https://github.com/laxmanpokhrel/xmanscript-useform/issues"
   },
-  "homepage": "https://github.com/**#readme",
+  "homepage": "https://github.com/laxmanpokhrel/xmanscript-useform#readme",
   "main": "./lib/index.js",
   "scripts": {
     "build": "rm -rf lib && tsc",
@@ -31,6 +29,7 @@
   "devDependencies": {
     "@types/jest": "^29.5.5",
     "@types/node": "^20.6.2",
+    "@types/react": "^18.2.21",
     "@types/uuid": "^9.0.2",
     "@typescript-eslint/eslint-plugin": "^6.7.0",
     "@typescript-eslint/parser": "^6.7.0",
@@ -73,5 +72,10 @@
   },
   "publishConfig": {
     "access": "public"
+  },
+  "dependencies": {
+    "@xmanscript/utils": "^1.1.1",
+    "react": "^18.2.0",
+    "yup": "^1.2.0"
   }
 }
