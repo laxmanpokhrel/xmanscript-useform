@@ -35,6 +35,7 @@ export default function useForm(
   function register() {
     return { setTouchedControls, touchedControls };
   }
+
   return {
     bindValues: values,
     setBindValues: setValues,
