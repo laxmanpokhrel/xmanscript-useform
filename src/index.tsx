@@ -1,9 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-/* eslint-disable no-unused-vars */
 import * as React from 'react';
 import { intersectObjects } from '@xmanscript/utils';
 import { IUseFormProps } from './@types';
-import { validateValueWithYupSchema } from './utils/validateValueWithYupSchema';
+import useDebouncedValidation from './hooks/useDebouncedValidation';
 
 export default function useForm(
   { initialValues, validationSchema, metaData, validateOnSubmit }: IUseFormProps = {
@@ -14,45 +13,36 @@ export default function useForm(
 ) {
   const [values, setValues] = React.useState<Record<string, any>>(initialValues);
   const [errors, setErrors] = React.useState<Record<string, any>>({});
-  const [touched, _setTouched] = React.useState<Record<string, boolean>>({});
-  const [formState, _setFormState] = React.useState<Record<string, any>>({});
+  const [touchedControls, setTouchedControls] = React.useState<Record<string, boolean>>({});
+  const [formState, setFormState] = React.useState<Record<string, any>>({});
 
-  React.useEffect(() => {
-    if (validateOnSubmit) return;
-    const timerInstance = setTimeout(async () => {
-      if (validationSchema) {
-        let errorObject: Record<string, any> = {};
-
-        // for yup validation schema
-        if (typeof validationSchema === 'object') {
-          errorObject = await validateValueWithYupSchema(validationSchema, values);
-        }
-        // for validation function
-        if (typeof validationSchema === 'function') {
-          errorObject = validationSchema(values);
-        }
-        // set the error object
-        setErrors(intersectObjects(errorObject, touched));
-      }
-    }, metaData.DEBOUNCE_TIME || 500);
-
-    // eslint-disable-next-line consistent-return
-    return () => clearTimeout(timerInstance);
-  }, [values, touched]);
+  // validate for no validateOnSubmit
+  if (!validateOnSubmit) {
+    // validate values using debounced validation
+    useDebouncedValidation({
+      validationSchema,
+      values,
+      callback: (errorObject: Record<string, any>) => {
+        setErrors(intersectObjects(errorObject, touchedControls));
+      },
+      debounceTime: metaData.DEBOUNCE_TIME,
+      dependencies: [values, touchedControls],
+    });
+  }
 
   function handleSubmit() {}
 
   function register() {
-    return {};
+    return { setTouchedControls, touchedControls };
   }
   return {
     bindValues: values,
     setBindValues: setValues,
     errors,
     setErrors,
-    touched,
     formState,
     register,
     handleSubmit,
+    setFormState,
   };
 }
