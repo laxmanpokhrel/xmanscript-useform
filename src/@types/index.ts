@@ -39,3 +39,9 @@ export interface IYupError {
   message: string;
   path: string;
 }
+
+export interface IRegisterPropType {
+  setCustomValue?: (e: any) => void;
+  required?: boolean;
+  disableFunc?: (data: Record<string, any>) => boolean;
+}
