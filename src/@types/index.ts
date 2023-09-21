@@ -14,10 +14,11 @@ export interface IRegisterProps
   uniquename: string;
 }
 
-export interface IOnChangeInterceptorProps {
-  currentValues: Record<string, any>;
-  currentTouchedControls: Record<string, boolean>;
+export interface IOnChangeInterceptorInput {
+  values: Record<string, any>;
+  touchedControls: Record<string, boolean>;
   errors: Record<string, any>;
+  touchedErrors: Record<string, any>;
 }
 
 interface IMetaDataProps {
@@ -31,8 +32,8 @@ export interface IUseFormInputProps {
   initialValues: Record<string, any>;
   formName?: string;
   validationSchema?: Schema<any> | ((values: Record<string, unknown>) => Record<string, any>);
-  onChangeDataInterceptor?: (props: IOnChangeInterceptorProps) => Record<string, any>;
-  postDataInterceptor?: (data: Record<string, any>) => Record<string, any>;
+  onChangeInterceptor?: (props: IOnChangeInterceptorInput) => Record<string, any>;
+  onSubmitDataInterceptor?: (data: Record<string, any>) => Record<string, any>;
   isNestedForm?: boolean;
   validateOnSubmit?: boolean;
   metaData?: IMetaDataProps;

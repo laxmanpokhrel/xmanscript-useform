@@ -34,6 +34,8 @@ export default function useForm({
   formName,
   submitHandler,
   scrollToErrorControl,
+  onChangeInterceptor,
+  onSubmitDataInterceptor,
 }: IUseFormInputProps) {
   const [values, setValues] = React.useState<Record<string, any>>(initialValues);
   const [errors, setErrors] = React.useState<Record<string, any>>({});
@@ -64,7 +66,7 @@ export default function useForm({
     // if the `submithandler` function is asyncronous we have to wait for the operation to finish
     if (submitHandler && isAsyncFunction(submitHandler)) {
       try {
-        await submitHandler(values);
+        await submitHandler(onSubmitDataInterceptor ? onSubmitDataInterceptor(values) : values);
       } catch (error: any) {
         throw new Error(`Error While Submiting Form. ${error}`);
       }
@@ -73,7 +75,7 @@ export default function useForm({
     // if submit handler is not asyncronous function then
     if (submitHandler && !isAsyncFunction(submitHandler)) {
       try {
-        if (submitHandler) submitHandler(values);
+        if (submitHandler) submitHandler(onSubmitDataInterceptor ? onSubmitDataInterceptor(values) : values);
       } catch (error: any) {
         throw new Error(`Error While Submiting Form. ${error}`);
       }
@@ -88,17 +90,55 @@ export default function useForm({
 
     // to handle value change
     function onChangeHandler(event: any) {
+      // if onChangeInterceptor is applied then we transfer the flow to the interceptor and set the values returned by the interceptor to the form values
       const isOnChangeEvent = event instanceof Event || !!event.target;
+
+      if (onChangeInterceptor) {
+        let interceptedValues: Record<string, any> = {};
+        if (isOnChangeEvent) {
+          interceptedValues = onChangeInterceptor({
+            values: {
+              ...values,
+              [controlName]: registerParamProps?.setCustomValue
+                ? registerParamProps.setCustomValue(event.target.value)
+                : event.target.value,
+            },
+            touchedErrors,
+            errors,
+            touchedControls,
+          });
+        } else {
+          interceptedValues = onChangeInterceptor({
+            values: {
+              ...values,
+              [controlName]: registerParamProps?.setCustomValue ? registerParamProps.setCustomValue(event) : event,
+            },
+            touchedErrors,
+            errors,
+            touchedControls,
+          });
+        }
+        setValues(interceptedValues);
+        return;
+      }
+      // onChangeInterceptor logic ends
+
       if (isOnChangeEvent) {
         event.stopPropagation();
-        setValues(
-          registerParamProps?.setCustomValue
+
+        setValues(prev => ({
+          ...prev,
+          [controlName]: registerParamProps?.setCustomValue
             ? registerParamProps.setCustomValue(event.target.value)
-            : event.target.value
-        );
+            : event.target.value,
+        }));
       } else {
-        setValues(registerParamProps?.setCustomValue ? registerParamProps.setCustomValue(event) : event);
+        setValues(prev => ({
+          ...prev,
+          [controlName]: registerParamProps?.setCustomValue ? registerParamProps.setCustomValue(event) : event,
+        }));
       }
+
       // update the touched state if   is `true`
       if (touchOnChange) {
         onTouchHandler();
