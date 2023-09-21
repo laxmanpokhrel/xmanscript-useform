@@ -3,7 +3,7 @@ import { Schema } from 'yup';
 import { IYupError } from '../@types';
 
 // Function to validate values with a Yup validation schema
-export async function validateValueWithYupSchema(
+async function validateValueWithYupSchema(
   validationSchema: Schema<any>,
   values: Record<string, any>
 ): Promise<Record<string, any>> {
@@ -33,6 +33,8 @@ export async function validateValueWithYupSchema(
   }
 }
 
-export function getControlId(formName: string, controlName: string) {
+function getControlId(formName: string, controlName: string) {
   return `-${formName}-form-field-${controlName}`;
 }
+
+export { validateValueWithYupSchema, getControlId };

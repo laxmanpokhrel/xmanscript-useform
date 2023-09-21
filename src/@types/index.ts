@@ -38,6 +38,7 @@ export interface IUseFormInputProps {
   metaData?: IMetaDataProps;
   touchOnChange?: boolean;
   submitHandler?: SyncFunction | AsyncFunction;
+  scrollToErrorControl?: boolean;
 }
 
 export interface IYupError {

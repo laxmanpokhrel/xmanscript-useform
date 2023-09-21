@@ -6,7 +6,7 @@ import { intersectObjects } from '@xmanscript/utils';
 import { IUseFormInputProps } from './@types';
 import useDebouncedValidation from './hooks/useDebouncedValidation';
 import { getControlId } from './utils/validateValueWithYupSchema';
-import isAsyncFunction from './utils/isAsyncFunction';
+import { isAsyncFunction } from './utils/isAsyncFunction';
 
 type SetEnableInputProps = { bindValue: any; bindvalues: any };
 type RegisterParamProps = {
@@ -25,21 +25,16 @@ type RegisterOutputType = {
   onChangeHandler: (e: any) => void; // controls will just have to execute this function
 };
 
-export default function useForm(
-  {
-    initialValues,
-    validationSchema,
-    metaData,
-    validateOnSubmit,
-    touchOnChange,
-    formName,
-    submitHandler,
-  }: IUseFormInputProps = {
-    initialValues: {},
-    validateOnSubmit: false,
-    metaData: { DEBOUNCE_TIME: 500 },
-  }
-) {
+export default function useForm({
+  initialValues,
+  validationSchema,
+  metaData,
+  validateOnSubmit,
+  touchOnChange,
+  formName,
+  submitHandler,
+  scrollToErrorControl,
+}: IUseFormInputProps) {
   const [values, setValues] = React.useState<Record<string, any>>(initialValues);
   const [errors, setErrors] = React.useState<Record<string, any>>({});
   const [touchedErrors, setTouchedErrors] = React.useState<Record<string, any>>({});
@@ -52,6 +47,7 @@ export default function useForm(
     useDebouncedValidation({
       validationSchema,
       values,
+      scrollToErrorControl: scrollToErrorControl || true, // scrollToErrorControl is `true` by default
       callback: (errorObject: Record<string, any>) => {
         // set errors for every controls
         setErrors(errorObject);
@@ -60,6 +56,7 @@ export default function useForm(
       },
       debounceTime: metaData?.DEBOUNCE_TIME ? metaData.DEBOUNCE_TIME : 300,
       dependencies: [values, touchedControls],
+      formName: formName || '',
     });
   }
 
