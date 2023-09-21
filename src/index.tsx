@@ -3,8 +3,10 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import * as React from 'react';
 import { intersectObjects } from '@xmanscript/utils';
-import { IUseFormProps } from './@types';
+import { IUseFormInputProps } from './@types';
 import useDebouncedValidation from './hooks/useDebouncedValidation';
+import { getControlId } from './utils/validateValueWithYupSchema';
+import isAsyncFunction from './utils/isAsyncFunction';
 
 type SetEnableInputProps = { bindValue: any; bindvalues: any };
 type RegisterParamProps = {
@@ -13,17 +15,26 @@ type RegisterParamProps = {
 };
 
 type RegisterOutputType = {
+  id: string;
   touchedError: any;
   error: any;
   hasError: boolean;
   touched: boolean;
   enable: boolean;
-  onTouchHandler: () => void; //controls will just have to execute this function
-  onChangeHandler: (e: any) => void; //controls will just have to execute this function
+  onTouchHandler: () => void; // controls will just have to execute this function
+  onChangeHandler: (e: any) => void; // controls will just have to execute this function
 };
 
 export default function useForm(
-  { initialValues, validationSchema, metaData, validateOnSubmit }: IUseFormProps = {
+  {
+    initialValues,
+    validationSchema,
+    metaData,
+    validateOnSubmit,
+    touchOnChange,
+    formName,
+    submitHandler,
+  }: IUseFormInputProps = {
     initialValues: {},
     validateOnSubmit: false,
     metaData: { DEBOUNCE_TIME: 500 },
@@ -42,15 +53,35 @@ export default function useForm(
       validationSchema,
       values,
       callback: (errorObject: Record<string, any>) => {
+        // set errors for every controls
         setErrors(errorObject);
+        // set error for only touched controls
         setTouchedErrors(intersectObjects(errorObject, touchedControls));
       },
-      debounceTime: metaData.DEBOUNCE_TIME,
+      debounceTime: metaData?.DEBOUNCE_TIME ? metaData.DEBOUNCE_TIME : 300,
       dependencies: [values, touchedControls],
     });
   }
 
-  function handleSubmit() {}
+  async function onSubmitHandler() {
+    // if the `submithandler` function is asyncronous we have to wait for the operation to finish
+    if (submitHandler && isAsyncFunction(submitHandler)) {
+      try {
+        await submitHandler();
+      } catch (error: any) {
+        throw new Error(`Error While Submiting Form. ${error}`);
+      }
+    }
+
+    // if submit handler is not asyncronous function then
+    if (submitHandler && !isAsyncFunction(submitHandler)) {
+      try {
+        if (submitHandler) submitHandler();
+      } catch (error: any) {
+        throw new Error(`Error While Submiting Form. ${error}`);
+      }
+    }
+  }
 
   function register(controlName: string, registerParamProps?: RegisterParamProps): RegisterOutputType {
     // function to handle touched state
@@ -71,10 +102,14 @@ export default function useForm(
       } else {
         setValues(registerParamProps?.setCustomValue ? registerParamProps.setCustomValue(event) : event);
       }
+      // update the touched state if   is `true`
+      if (touchOnChange) {
+        onTouchHandler();
+      }
     }
 
-    // return touchedError, error,hasError,setTouched,touched,enable
     return {
+      id: getControlId(formName || '', controlName),
       touchedError: touchedErrors[controlName],
       error: errors[controlName],
       hasError: !!errors[controlName],
@@ -97,7 +132,7 @@ export default function useForm(
     setErrors,
     formState,
     register,
-    handleSubmit,
+    onSubmitHandler,
     setFormState,
   };
 }

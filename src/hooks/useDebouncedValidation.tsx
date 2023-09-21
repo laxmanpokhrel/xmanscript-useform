@@ -28,10 +28,12 @@ export default function useDebouncedValidation({
         if (typeof validationSchema === 'object') {
           errorObject = await validateValueWithYupSchema(validationSchema, values);
         }
+
         // for validation function
         if (typeof validationSchema === 'function') {
           errorObject = validationSchema(values);
         }
+
         // call the callback function
         callback(errorObject);
       }

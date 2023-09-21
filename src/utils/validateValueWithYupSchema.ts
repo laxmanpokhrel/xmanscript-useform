@@ -10,7 +10,7 @@ export async function validateValueWithYupSchema(
   try {
     // Validate the provided values against the Yup validation schema,
     // allowing multiple validation errors (abortEarly: false)
-    if (Object.keys(values).length && validationSchema)
+    if (typeof values === 'object' && validationSchema)
       await validationSchema.validateSync(values, { abortEarly: false });
 
     // If validation succeeds, return an empty object (no errors)

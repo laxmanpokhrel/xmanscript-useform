@@ -24,15 +24,20 @@ interface IMetaDataProps {
   DEBOUNCE_TIME: number;
 }
 
-export interface IUseFormProps {
+export type SyncFunction = () => void;
+export type AsyncFunction = () => Promise<void>;
+
+export interface IUseFormInputProps {
   initialValues: Record<string, any>;
-  formName?: string | null;
+  formName?: string;
   validationSchema?: Schema<any> | ((values: Record<string, unknown>) => Record<string, any>);
   onChangeDataInterceptor?: (props: IOnChangeInterceptorProps) => Record<string, any>;
   postDataInterceptor?: (data: Record<string, any>) => Record<string, any>;
   isNestedForm?: boolean;
   validateOnSubmit?: boolean;
-  metaData: IMetaDataProps;
+  metaData?: IMetaDataProps;
+  touchOnChange?: boolean;
+  submitHandler?: SyncFunction | AsyncFunction;
 }
 
 export interface IYupError {
