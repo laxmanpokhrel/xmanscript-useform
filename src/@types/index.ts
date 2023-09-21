@@ -27,6 +27,8 @@ interface IMetaDataProps {
 
 export type SyncFunction = (values: Record<string, any>) => void;
 export type AsyncFunction = (values: Record<string, any>) => Promise<void>;
+export type PrefillerSyncFunction = () => Record<string, any>;
+export type PrefillerAsyncFunction = () => Promise<Record<string, any>>;
 
 export interface IUseFormInputProps {
   initialValues: Record<string, any>;
@@ -40,6 +42,7 @@ export interface IUseFormInputProps {
   touchOnChange?: boolean;
   submitHandler?: SyncFunction | AsyncFunction;
   scrollToErrorControl?: boolean;
+  preFiller?: PrefillerSyncFunction | PrefillerAsyncFunction;
 }
 
 export interface IYupError {

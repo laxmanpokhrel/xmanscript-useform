@@ -36,6 +36,8 @@ export default function useForm({
   scrollToErrorControl,
   onChangeInterceptor,
   onSubmitDataInterceptor,
+  isNestedForm,
+  preFiller,
 }: IUseFormInputProps) {
   const [values, setValues] = React.useState<Record<string, any>>(initialValues);
   const [errors, setErrors] = React.useState<Record<string, any>>({});
@@ -43,6 +45,24 @@ export default function useForm({
   const [touchedControls, setTouchedControls] = React.useState<Record<string, boolean>>({});
   const [formState, setFormState] = React.useState<Record<string, any>>({});
 
+  React.useEffect(() => {
+    (async () => {
+      if (preFiller) {
+        try {
+          let preFillValues: Record<string, any> = {};
+          if (isAsyncFunction(preFiller)) {
+            preFillValues = await preFiller();
+          }
+          if (!isAsyncFunction(preFiller)) {
+            preFillValues = await preFiller();
+          }
+          setValues(preFillValues);
+        } catch (error) {
+          throw new Error(`Error Occured At Prefiller. ${error}`);
+        }
+      }
+    })();
+  }, []);
   // validate for no validateOnSubmit
   if (!validateOnSubmit) {
     // validate values using debounced validation
@@ -53,6 +73,7 @@ export default function useForm({
       callback: (errorObject: Record<string, any>) => {
         // set errors for every controls
         setErrors(errorObject);
+
         // set error for only touched controls
         setTouchedErrors(intersectObjects(errorObject, touchedControls));
       },
@@ -63,22 +84,19 @@ export default function useForm({
   }
 
   async function onSubmitHandler() {
+    if (isNestedForm) return;
     // if the `submithandler` function is asyncronous we have to wait for the operation to finish
-    if (submitHandler && isAsyncFunction(submitHandler)) {
-      try {
+    try {
+      if (submitHandler && isAsyncFunction(submitHandler)) {
         await submitHandler(onSubmitDataInterceptor ? onSubmitDataInterceptor(values) : values);
-      } catch (error: any) {
-        throw new Error(`Error While Submiting Form. ${error}`);
       }
-    }
 
-    // if submit handler is not asyncronous function then
-    if (submitHandler && !isAsyncFunction(submitHandler)) {
-      try {
+      // if submit handler is not asyncronous function then
+      if (submitHandler && !isAsyncFunction(submitHandler)) {
         if (submitHandler) submitHandler(onSubmitDataInterceptor ? onSubmitDataInterceptor(values) : values);
-      } catch (error: any) {
-        throw new Error(`Error While Submiting Form. ${error}`);
       }
+    } catch (error: any) {
+      throw new Error(`Error While Submiting Form. ${error}`);
     }
   }
 
