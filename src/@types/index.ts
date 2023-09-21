@@ -24,8 +24,8 @@ interface IMetaDataProps {
   DEBOUNCE_TIME: number;
 }
 
-export type SyncFunction = () => void;
-export type AsyncFunction = () => Promise<void>;
+export type SyncFunction = (values: Record<string, any>) => void;
+export type AsyncFunction = (values: Record<string, any>) => Promise<void>;
 
 export interface IUseFormInputProps {
   initialValues: Record<string, any>;

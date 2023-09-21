@@ -67,7 +67,7 @@ export default function useForm(
     // if the `submithandler` function is asyncronous we have to wait for the operation to finish
     if (submitHandler && isAsyncFunction(submitHandler)) {
       try {
-        await submitHandler();
+        await submitHandler(values);
       } catch (error: any) {
         throw new Error(`Error While Submiting Form. ${error}`);
       }
@@ -76,7 +76,7 @@ export default function useForm(
     // if submit handler is not asyncronous function then
     if (submitHandler && !isAsyncFunction(submitHandler)) {
       try {
-        if (submitHandler) submitHandler();
+        if (submitHandler) submitHandler(values);
       } catch (error: any) {
         throw new Error(`Error While Submiting Form. ${error}`);
       }
