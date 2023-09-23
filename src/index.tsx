@@ -1,3 +1,4 @@
+/* eslint-disable import/prefer-default-export */
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-nested-ternary */
 /* eslint-disable react-hooks/exhaustive-deps */
@@ -25,7 +26,7 @@ type RegisterOutputType = {
   onChangeHandler: (e: any) => void; // controls will just have to execute this function
 };
 
-export default function useForm({
+export function useForm({
   initialValues,
   validationSchema,
   metaData,

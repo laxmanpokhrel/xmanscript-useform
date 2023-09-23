@@ -1,6 +1,6 @@
 {
-  "name": "@xmanscript/useform",
-  "version": "1.0.0",
+  "name": "@xmanscript/useform-test",
+  "version": "1.0.0-semantically-released",
   "description": "Yet another useForm hook to confuse developers.",
   "repository": {
     "type": "git",
