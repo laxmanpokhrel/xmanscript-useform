@@ -25,10 +25,11 @@ interface IMetaDataProps {
   DEBOUNCE_TIME: number;
 }
 
-export type SyncFunction = (values: Record<string, any>) => void;
 export type AsyncFunction = (values: Record<string, any>) => Promise<void>;
-export type PrefillerSyncFunction = () => Record<string, any>;
-export type PrefillerAsyncFunction = () => Promise<Record<string, any>>;
+export type SyncSubmitHandlerFunction = (values: Record<string, any>) => void;
+export type AsyncSubmitHandlerFunction = (values: Record<string, any>) => Promise<void>;
+export type SyncPrefillerFunction = () => Record<string, any>;
+export type AsyncPrefillerFunction = () => Promise<Record<string, any>>;
 
 export interface IUseFormInputProps {
   initialValues: Record<string, any>;
@@ -40,9 +41,9 @@ export interface IUseFormInputProps {
   validateOnSubmit?: boolean;
   metaData?: IMetaDataProps;
   touchOnChange?: boolean;
-  submitHandler?: SyncFunction | AsyncFunction;
+  submitHandler?: SyncSubmitHandlerFunction | AsyncSubmitHandlerFunction;
   scrollToErrorControl?: boolean;
-  preFiller?: PrefillerSyncFunction | PrefillerAsyncFunction;
+  preFiller?: SyncPrefillerFunction | AsyncPrefillerFunction;
 }
 
 export interface IYupError {
