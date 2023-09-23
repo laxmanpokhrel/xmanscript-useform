@@ -85,15 +85,16 @@ export default function useForm({
 
   async function onSubmitHandler() {
     if (isNestedForm) return;
-    // if the `submithandler` function is asyncronous we have to wait for the operation to finish
     try {
-      if (submitHandler && isAsyncFunction(submitHandler)) {
-        await submitHandler(onSubmitDataInterceptor ? onSubmitDataInterceptor(values) : values);
-      }
-
-      // if submit handler is not asyncronous function then
-      if (submitHandler && !isAsyncFunction(submitHandler)) {
-        if (submitHandler) submitHandler(onSubmitDataInterceptor ? onSubmitDataInterceptor(values) : values);
+      if (submitHandler) {
+        // if the `submithandler` function is asyncronous we have to wait for the operation to finish
+        if (isAsyncFunction(submitHandler)) {
+          await submitHandler(onSubmitDataInterceptor ? onSubmitDataInterceptor(values) : values);
+        }
+        // if submit handler is not asyncronous function then
+        if (!isAsyncFunction(submitHandler)) {
+          if (submitHandler) submitHandler(onSubmitDataInterceptor ? onSubmitDataInterceptor(values) : values);
+        }
       }
     } catch (error: any) {
       throw new Error(`Error While Submiting Form. ${error}`);
@@ -137,6 +138,7 @@ export default function useForm({
           });
         }
         setValues(interceptedValues);
+        // we do not continue executing after this
         return;
       }
       // onChangeInterceptor logic ends
