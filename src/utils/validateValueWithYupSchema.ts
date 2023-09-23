@@ -3,14 +3,14 @@ import { Schema } from 'yup';
 import { IYupError } from '../@types';
 
 // Function to validate values with a Yup validation schema
-export async function validateValueWithYupSchema(
+async function validateValueWithYupSchema(
   validationSchema: Schema<any>,
   values: Record<string, any>
 ): Promise<Record<string, any>> {
   try {
     // Validate the provided values against the Yup validation schema,
     // allowing multiple validation errors (abortEarly: false)
-    if (Object.keys(values).length && validationSchema)
+    if (typeof values === 'object' && validationSchema)
       await validationSchema.validateSync(values, { abortEarly: false });
 
     // If validation succeeds, return an empty object (no errors)
@@ -33,6 +33,8 @@ export async function validateValueWithYupSchema(
   }
 }
 
-export function getControlId(formName: string, controlName: string) {
+function getControlId(formName: string, controlName: string) {
   return `-${formName}-form-field-${controlName}`;
 }
+
+export { validateValueWithYupSchema, getControlId };
