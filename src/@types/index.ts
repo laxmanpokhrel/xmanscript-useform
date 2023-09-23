@@ -24,10 +24,11 @@ export interface IOnChangeInterceptorInput {
 interface IMetaDataProps {
   DEBOUNCE_TIME: number;
 }
+type SubmitHandlerInputProps = { package: Record<string, any>; differencePackage: Record<string, any> };
 
 export type AsyncFunction = (values: Record<string, any>) => Promise<void>;
-export type SyncSubmitHandlerFunction = (values: Record<string, any>) => void;
-export type AsyncSubmitHandlerFunction = (values: Record<string, any>) => Promise<void>;
+export type SyncSubmitHandlerFunction = (props: SubmitHandlerInputProps) => void;
+export type AsyncSubmitHandlerFunction = (props: SubmitHandlerInputProps) => Promise<void>;
 export type SyncPrefillerFunction = () => Record<string, any>;
 export type AsyncPrefillerFunction = () => Promise<Record<string, any>>;
 
@@ -43,7 +44,7 @@ export interface IUseFormInputProps {
   touchOnChange?: boolean;
   submitHandler?: SyncSubmitHandlerFunction | AsyncSubmitHandlerFunction;
   scrollToErrorControl?: boolean;
-  preFiller?: SyncPrefillerFunction | AsyncPrefillerFunction;
+  preFillerFn?: SyncPrefillerFunction | AsyncPrefillerFunction;
 }
 
 export interface IYupError {

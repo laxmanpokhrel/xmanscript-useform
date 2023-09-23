@@ -2,7 +2,7 @@
 /* eslint-disable no-nested-ternary */
 /* eslint-disable react-hooks/exhaustive-deps */
 import * as React from 'react';
-import { intersectObjects } from '@xmanscript/utils';
+import { getDifferenceObject, intersectObjects } from '@xmanscript/utils';
 import { IUseFormInputProps } from './@types';
 import useDebouncedValidation from './hooks/useDebouncedValidation';
 import { getControlId } from './utils/validateValueWithYupSchema';
@@ -37,25 +37,28 @@ export default function useForm({
   onChangeInterceptor,
   onSubmitDataInterceptor,
   isNestedForm,
-  preFiller,
+  preFillerFn,
 }: IUseFormInputProps) {
   const [values, setValues] = React.useState<Record<string, any>>(initialValues);
   const [errors, setErrors] = React.useState<Record<string, any>>({});
   const [touchedErrors, setTouchedErrors] = React.useState<Record<string, any>>({});
   const [touchedControls, setTouchedControls] = React.useState<Record<string, boolean>>({});
   const [formState, setFormState] = React.useState<Record<string, any>>({});
-
+  // copy initial values to have them stored and unchanged
+  let initialValueCache = initialValues;
   React.useEffect(() => {
     (async () => {
-      if (preFiller) {
+      if (preFillerFn) {
         try {
           let preFillValues: Record<string, any> = {};
-          if (isAsyncFunction(preFiller)) {
-            preFillValues = await preFiller();
+          if (isAsyncFunction(preFillerFn)) {
+            preFillValues = await preFillerFn();
           }
-          if (!isAsyncFunction(preFiller)) {
-            preFillValues = await preFiller();
+          if (!isAsyncFunction(preFillerFn)) {
+            preFillValues = preFillerFn();
           }
+          // set initialValueCache
+          initialValueCache = preFillValues;
           setValues(preFillValues);
         } catch (error) {
           throw new Error(`Error Occured At Prefiller. ${error}`);
@@ -75,7 +78,7 @@ export default function useForm({
         setErrors(errorObject);
 
         // set error for only touched controls
-        setTouchedErrors(intersectObjects(errorObject, touchedControls));
+        setTouchedErrors(intersectObjects(touchedControls, errorObject));
       },
       debounceTime: metaData?.DEBOUNCE_TIME ? metaData.DEBOUNCE_TIME : 300,
       dependencies: [values, touchedControls],
@@ -89,11 +92,23 @@ export default function useForm({
       if (submitHandler) {
         // if the `submithandler` function is asyncronous we have to wait for the operation to finish
         if (isAsyncFunction(submitHandler)) {
-          await submitHandler(onSubmitDataInterceptor ? onSubmitDataInterceptor(values) : values);
+          // submit handler will take the package ready to perform submit action and a difference object between initial values set and package ready
+          await submitHandler({
+            package: onSubmitDataInterceptor ? onSubmitDataInterceptor(values) : values,
+            differencePackage: onSubmitDataInterceptor
+              ? getDifferenceObject(initialValueCache, onSubmitDataInterceptor(values))
+              : getDifferenceObject(initialValueCache, values),
+          });
         }
         // if submit handler is not asyncronous function then
         if (!isAsyncFunction(submitHandler)) {
-          if (submitHandler) submitHandler(onSubmitDataInterceptor ? onSubmitDataInterceptor(values) : values);
+          if (submitHandler)
+            submitHandler({
+              package: onSubmitDataInterceptor ? onSubmitDataInterceptor(values) : values,
+              differencePackage: onSubmitDataInterceptor
+                ? getDifferenceObject(initialValueCache, onSubmitDataInterceptor(values))
+                : getDifferenceObject(initialValueCache, values),
+            });
         }
       }
     } catch (error: any) {
