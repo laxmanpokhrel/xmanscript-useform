@@ -22,6 +22,7 @@ type RegisterOutputType = {
   hasError: boolean;
   touched: boolean;
   enable: boolean;
+  bindValue: any;
   onTouchHandler: () => void; // controls will just have to execute this function
   onChangeHandler: (e: any) => void; // controls will just have to execute this function
 };
@@ -187,6 +188,7 @@ export function useForm({
       error: errors[controlName],
       hasError: !!errors[controlName],
       touched: touchedControls[controlName],
+      bindValue: values[controlName],
       onTouchHandler,
       onChangeHandler,
       enable:
