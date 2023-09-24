@@ -1,5 +1,5 @@
 {
-  "name": "@xmanscript/useform-test",
+  "name": "@xmanscript/useform",
   "version": "1.0.0-semantically-released",
   "description": "Yet another useForm hook to confuse developers.",
   "repository": {
@@ -22,7 +22,8 @@
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
     "commit": "cz",
-    "semantic-release": "semantic-release"
+    "semantic-release": "semantic-release",
+    "dev": "nodemon test.ts"
   },
   "author": "Laxman Pokhrel",
   "license": "MIT",
