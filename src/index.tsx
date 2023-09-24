@@ -3,16 +3,17 @@
 /* eslint-disable no-nested-ternary */
 /* eslint-disable react-hooks/exhaustive-deps */
 import * as React from 'react';
-import { getDifferenceObject, intersectObjects } from '@xmanscript/utils';
+import { getDifferenceObject, intersectObjects, scrollToComponent } from '@xmanscript/utils';
 import { IUseFormInputProps } from './@types';
 import useDebouncedValidation from './hooks/useDebouncedValidation';
 import { getControlId } from './utils/validateValueWithYupSchema';
 import { isAsyncFunction } from './utils/isAsyncFunction';
+import validateFormValues from './utils/validateFormValues';
 
 type SetEnableInputProps = { bindValue: any; bindvalues: any };
 type RegisterParamProps = {
   setCustomValue: (value: any) => Record<string, any>;
-  setEnable: ((props: SetEnableInputProps) => boolean) | boolean;
+  setEnable?: ((props: SetEnableInputProps) => boolean) | boolean;
 };
 
 type RegisterOutputType = {
@@ -27,29 +28,29 @@ type RegisterOutputType = {
   onChangeHandler: (e: any) => void; // controls will just have to execute this function
 };
 
-export function useForm({
+function useForm({
   initialValues,
   validationSchema,
   metaData,
   validateOnSubmit,
   touchOnChange,
-  formName,
+  formName = '',
   submitHandler,
-  scrollToErrorControl,
+  scrollToErrorControl = true,
   onChangeInterceptor,
   onSubmitDataInterceptor,
   isNestedForm,
   preFillerFn,
 }: IUseFormInputProps) {
-  const [values, setValues] = React.useState<Record<string, any>>(initialValues);
+  const [initial, setInitial] = React.useState(initialValues);
+
+  const [values, setValues] = React.useState<Record<string, any>>(initial);
   const [errors, setErrors] = React.useState<Record<string, any>>({});
   const [touchedErrors, setTouchedErrors] = React.useState<Record<string, any>>({});
   const [touchedControls, setTouchedControls] = React.useState<Record<string, boolean>>({});
   const [formState, setFormState] = React.useState<Record<string, any>>({});
   const [controlEnable, setControlEnable] = React.useState<Record<string, boolean>>({});
 
-  // copy initial values to have them stored and unchanged
-  let initialValueCache = initialValues;
   React.useEffect(() => {
     (async () => {
       if (preFillerFn) {
@@ -62,7 +63,7 @@ export function useForm({
             preFillValues = preFillerFn();
           }
           // set initialValueCache
-          initialValueCache = preFillValues;
+          setInitial(preFillValues);
           setValues(preFillValues);
         } catch (error) {
           throw new Error(`Error Occured At Prefiller. ${error}`);
@@ -70,13 +71,15 @@ export function useForm({
       }
     })();
   }, []);
+
   // validate for no validateOnSubmit
   if (!validateOnSubmit) {
     // validate values using debounced validation
     useDebouncedValidation({
       validationSchema,
       values,
-      scrollToErrorControl: scrollToErrorControl || true, // scrollToErrorControl is `true` by default
+      debounceTime: metaData?.DEBOUNCE_TIME ? metaData.DEBOUNCE_TIME : 300,
+      dependencies: [values, touchedControls],
       callback: (errorObject: Record<string, any>) => {
         // set errors for every controls
         setErrors(errorObject);
@@ -84,15 +87,43 @@ export function useForm({
         // set error for only touched controls
         setTouchedErrors(intersectObjects(touchedControls, errorObject));
       },
-      debounceTime: metaData?.DEBOUNCE_TIME ? metaData.DEBOUNCE_TIME : 300,
-      dependencies: [values, touchedControls],
-      formName: formName || '',
     });
   }
 
-  async function onSubmitHandler() {
+  async function onSubmitHandler(
+    e: React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) {
+    e.preventDefault();
     if (isNestedForm) return;
     try {
+      // validate values before submitting
+
+      if (validationSchema) {
+        const errorObject = await validateFormValues({ validationSchema, values });
+
+        // set the error state
+        setErrors(errorObject);
+
+        // also set the touched error
+        setTouchedErrors(errorObject);
+        const errorKeysAfterValidation = Object.keys(errorObject);
+
+        // set all touched controls to true
+        const touchedObject = errorKeysAfterValidation?.reduce((obj, item) => ({ ...obj, [item]: true }), {});
+        setTouchedControls(prev => ({ ...prev, ...touchedObject }));
+
+        // if `scrollToErrorControl` is true and has error then we scroll to the first control with error
+        if (scrollToErrorControl && Object.keys(errorObject).length) {
+          scrollToComponent({
+            componentId: getControlId(formName, errorObject[Object.keys(errorObject)[0]]),
+            focusAfterScroll: true,
+          });
+        }
+
+        // no further execution
+        if (errorKeysAfterValidation.length) return;
+      }
+
       if (submitHandler) {
         // if the `submithandler` function is asyncronous we have to wait for the operation to finish
         if (isAsyncFunction(submitHandler)) {
@@ -100,8 +131,8 @@ export function useForm({
           await submitHandler({
             package: onSubmitDataInterceptor ? onSubmitDataInterceptor(values) : values,
             differencePackage: onSubmitDataInterceptor
-              ? getDifferenceObject(initialValueCache, onSubmitDataInterceptor(values))
-              : getDifferenceObject(initialValueCache, values),
+              ? getDifferenceObject(initial, onSubmitDataInterceptor(values))
+              : getDifferenceObject(initial, values),
           });
         }
         // if submit handler is not asyncronous function then
@@ -110,8 +141,8 @@ export function useForm({
             submitHandler({
               package: onSubmitDataInterceptor ? onSubmitDataInterceptor(values) : values,
               differencePackage: onSubmitDataInterceptor
-                ? getDifferenceObject(initialValueCache, onSubmitDataInterceptor(values))
-                : getDifferenceObject(initialValueCache, values),
+                ? getDifferenceObject(initial, onSubmitDataInterceptor(values))
+                : getDifferenceObject(initial, values),
             });
         }
       }
@@ -199,18 +230,19 @@ export function useForm({
         onTouchHandler();
       }
     }
-
-    return {
+    const returnedObj = {
       id: getControlId(formName || '', controlName),
-      touchedError: touchedErrors[controlName],
-      error: errors[controlName],
+      controlName,
+      touchedError: touchedErrors[controlName] || null,
+      error: errors[controlName] || null,
       hasError: !!errors[controlName],
-      touched: touchedControls[controlName],
+      touched: !!touchedControls[controlName],
       bindValue: values[controlName],
       onTouchHandler,
       onChangeHandler,
       enable: controlEnable[controlName] || true,
     };
+    return returnedObj;
   }
 
   return {
@@ -224,3 +256,5 @@ export function useForm({
     setFormState,
   };
 }
+
+export default useForm;
