@@ -46,6 +46,8 @@ export function useForm({
   const [touchedErrors, setTouchedErrors] = React.useState<Record<string, any>>({});
   const [touchedControls, setTouchedControls] = React.useState<Record<string, boolean>>({});
   const [formState, setFormState] = React.useState<Record<string, any>>({});
+  const [controlEnable, setControlEnable] = React.useState<Record<string, boolean>>({});
+
   // copy initial values to have them stored and unchanged
   let initialValueCache = initialValues;
   React.useEffect(() => {
@@ -126,9 +128,25 @@ export function useForm({
 
     // to handle value change
     function onChangeHandler(event: any) {
-      // if onChangeInterceptor is applied then we transfer the flow to the interceptor and set the values returned by the interceptor to the form values
       const isOnChangeEvent = event instanceof Event || !!event.target;
 
+      // there is `setEnable` function or value
+      if (registerParamProps && registerParamProps?.setEnable) {
+        setControlEnable(prev => ({
+          ...prev,
+          [controlName]: registerParamProps?.setEnable
+            ? typeof registerParamProps.setEnable === 'function'
+              ? registerParamProps.setEnable({
+                  bindValue: isOnChangeEvent ? event.target.value : event,
+                  bindvalues: values,
+                })
+              : typeof registerParamProps.setEnable === 'boolean'
+              ? registerParamProps.setEnable
+              : true
+            : true,
+        }));
+      }
+      // if onChangeInterceptor is applied then we transfer the flow to the interceptor and set the values returned by the interceptor to the form values
       if (onChangeInterceptor) {
         let interceptedValues: Record<string, any> = {};
         if (isOnChangeEvent) {
@@ -176,7 +194,7 @@ export function useForm({
         }));
       }
 
-      // update the touched state if   is `true`
+      // update the touched state if it is `true`
       if (touchOnChange) {
         onTouchHandler();
       }
@@ -191,12 +209,7 @@ export function useForm({
       bindValue: values[controlName],
       onTouchHandler,
       onChangeHandler,
-      enable:
-        typeof registerParamProps?.setEnable === 'function'
-          ? registerParamProps.setEnable({ bindValue: values[controlName], bindvalues: values })
-          : typeof registerParamProps?.setEnable === 'boolean'
-          ? registerParamProps?.setEnable
-          : true,
+      enable: controlEnable[controlName] || true,
     };
   }
 
