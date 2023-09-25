@@ -57,3 +57,40 @@ export interface IRegisterPropType {
   required?: boolean;
   disableFunc?: (data: Record<string, any>) => boolean;
 }
+
+// ***************** types ************************
+type ControlRegisterStatus = { controlFilling: boolean };
+
+export type RegisterOutputType = {
+  id: string;
+  touchedError: any;
+  error: any;
+  hasError: boolean;
+  touched: boolean;
+  enable: boolean;
+  bindValue: any;
+  onTouchHandler: () => void; // controls will just have to execute this function
+  onChangeHandler: (e: any) => void; // controls will just have to execute this function
+  controlName: string;
+  status: ControlRegisterStatus;
+};
+
+type SetEnableInputProps = { bindValue: any; bindvalues: any };
+export type RegisterParamProps = {
+  setCustomValue: (value: any) => Record<string, any>;
+  setEnable?: ((props: SetEnableInputProps) => boolean) | boolean;
+  controlFillerFn?: (() => Promise<any>) | (() => any);
+};
+
+export type UseFormOutputType = {
+  bindValues: Record<string, any>;
+  setBindValues: React.Dispatch<React.SetStateAction<Record<string, any>>>;
+  errors: Record<string, any>;
+  setErrors: React.Dispatch<React.SetStateAction<Record<string, any>>>;
+  formState: Record<string, boolean>;
+  register: (controlName: string, registerParamProps?: RegisterParamProps) => RegisterOutputType;
+  onSubmitHandler: (
+    e: React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => Promise<void>;
+  setFormState: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
+};

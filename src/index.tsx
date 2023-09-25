@@ -4,29 +4,11 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import * as React from 'react';
 import { getDifferenceObject, intersectObjects, scrollToComponent } from '@xmanscript/utils';
-import { IUseFormInputProps } from './@types';
+import { IUseFormInputProps, RegisterOutputType, RegisterParamProps, UseFormOutputType } from './@types';
 import useDebouncedValidation from './hooks/useDebouncedValidation';
 import { getControlId } from './utils/validateValueWithYupSchema';
 import { isAsyncFunction } from './utils/isAsyncFunction';
 import validateFormValues from './utils/validateFormValues';
-
-type SetEnableInputProps = { bindValue: any; bindvalues: any };
-type RegisterParamProps = {
-  setCustomValue: (value: any) => Record<string, any>;
-  setEnable?: ((props: SetEnableInputProps) => boolean) | boolean;
-};
-
-type RegisterOutputType = {
-  id: string;
-  touchedError: any;
-  error: any;
-  hasError: boolean;
-  touched: boolean;
-  enable: boolean;
-  bindValue: any;
-  onTouchHandler: () => void; // controls will just have to execute this function
-  onChangeHandler: (e: any) => void; // controls will just have to execute this function
-};
 
 function useForm({
   initialValues,
@@ -41,15 +23,24 @@ function useForm({
   onSubmitDataInterceptor,
   isNestedForm,
   preFillerFn,
-}: IUseFormInputProps) {
+}: IUseFormInputProps): UseFormOutputType {
   const [initial, setInitial] = React.useState(initialValues);
 
   const [values, setValues] = React.useState<Record<string, any>>(initial);
   const [errors, setErrors] = React.useState<Record<string, any>>({});
   const [touchedErrors, setTouchedErrors] = React.useState<Record<string, any>>({});
   const [touchedControls, setTouchedControls] = React.useState<Record<string, boolean>>({});
-  const [formState, setFormState] = React.useState<Record<string, any>>({});
   const [controlEnable, setControlEnable] = React.useState<Record<string, boolean>>({});
+
+  const [formState, setFormState] = React.useState<Record<string, boolean>>({
+    isPrefilling: false,
+    isSubmitting: false,
+    submitionError: false,
+    hasError: false,
+    isValidating: false,
+    isControlPrefilling: false,
+  });
+  const [controlFilling, setControlFilling] = React.useState<Record<string, boolean>>({});
 
   React.useEffect(() => {
     (async () => {
@@ -57,7 +48,13 @@ function useForm({
         try {
           let preFillValues: Record<string, any> = {};
           if (isAsyncFunction(preFillerFn)) {
+            // set prefilling state
+            setFormState(prev => ({ ...prev, isPrefilling: true }));
+
             preFillValues = await preFillerFn();
+
+            // set prefilling state
+            setFormState(prev => ({ ...prev, isPrefilling: false }));
           }
           if (!isAsyncFunction(preFillerFn)) {
             preFillValues = preFillerFn();
@@ -84,6 +81,8 @@ function useForm({
         // set errors for every controls
         setErrors(errorObject);
 
+        // set form error state
+        setFormState(prev => ({ ...prev, hasError: !!Object.keys(errorObject).length }));
         // set error for only touched controls
         setTouchedErrors(intersectObjects(touchedControls, errorObject));
       },
@@ -103,6 +102,9 @@ function useForm({
 
         // set the error state
         setErrors(errorObject);
+
+        // set form error state
+        setFormState(prev => ({ ...prev, hasError: !!Object.keys(errorObject).length }));
 
         // also set the touched error
         setTouchedErrors(errorObject);
@@ -127,6 +129,9 @@ function useForm({
       if (submitHandler) {
         // if the `submithandler` function is asyncronous we have to wait for the operation to finish
         if (isAsyncFunction(submitHandler)) {
+          // set submitting status
+          setFormState(prev => ({ ...prev, isSubmitting: true }));
+
           // submit handler will take the package ready to perform submit action and a difference object between initial values set and package ready
           await submitHandler({
             package: onSubmitDataInterceptor ? onSubmitDataInterceptor(values) : values,
@@ -134,6 +139,9 @@ function useForm({
               ? getDifferenceObject(initial, onSubmitDataInterceptor(values))
               : getDifferenceObject(initial, values),
           });
+
+          // set submitting status
+          setFormState(prev => ({ ...prev, isSubmitting: false }));
         }
         // if submit handler is not asyncronous function then
         if (!isAsyncFunction(submitHandler)) {
@@ -146,12 +154,41 @@ function useForm({
             });
         }
       }
+      // set submition status
+      setFormState(prev => ({ ...prev, submitionError: false }));
     } catch (error: any) {
+      // set submition status
+      setFormState(prev => ({ ...prev, submitionError: true }));
       throw new Error(`Error While Submiting Form. ${error}`);
     }
   }
 
   function register(controlName: string, registerParamProps?: RegisterParamProps): RegisterOutputType {
+    // set the control value if the controlFillerFn is supplied
+    (async () => {
+      if (registerParamProps?.controlFillerFn) {
+        if (isAsyncFunction(registerParamProps.controlFillerFn)) {
+          // set control filling to true
+          setControlFilling(prev => ({ ...prev, [controlName]: true }));
+          setFormState(prev => ({ ...prev, isControlFilling: true }));
+
+          const controlFillerValue = await registerParamProps.controlFillerFn();
+          setValues(prev => ({ ...prev, [controlName]: controlFillerValue }));
+
+          // set control filling to false
+          setControlFilling(prev => ({ ...prev, [controlName]: false }));
+          setFormState(prev => ({ ...prev, isControlFilling: false }));
+        }
+        if (
+          typeof registerParamProps.controlFillerFn === 'function' &&
+          !isAsyncFunction(registerParamProps.controlFillerFn)
+        ) {
+          const controlFillerValue = registerParamProps.controlFillerFn();
+          setValues(prev => ({ ...prev, [controlName]: controlFillerValue }));
+        }
+      }
+    })();
+
     // function to handle touched state
     function onTouchHandler() {
       setTouchedControls(prev => ({ ...prev, [controlName]: true }));
@@ -209,6 +246,7 @@ function useForm({
       }
       // onChangeInterceptor logic ends
 
+      // if argument is an event
       if (isOnChangeEvent) {
         event.stopPropagation();
 
@@ -230,7 +268,7 @@ function useForm({
         onTouchHandler();
       }
     }
-    const returnedObj = {
+    return {
       id: getControlId(formName || '', controlName),
       controlName,
       touchedError: touchedErrors[controlName] || null,
@@ -241,8 +279,8 @@ function useForm({
       onTouchHandler,
       onChangeHandler,
       enable: controlEnable[controlName] || true,
+      status: { controlFilling: controlFilling[controlName] || false },
     };
-    return returnedObj;
   }
 
   return {
