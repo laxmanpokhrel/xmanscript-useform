@@ -14,6 +14,7 @@ type SetEnableInputProps = { bindValue: any; bindvalues: any };
 type RegisterParamProps = {
   setCustomValue: (value: any) => Record<string, any>;
   setEnable?: ((props: SetEnableInputProps) => boolean) | boolean;
+  controlFillerFn?: (() => Promise<any>) | (() => any);
 };
 
 type RegisterOutputType = {
@@ -152,6 +153,23 @@ function useForm({
   }
 
   function register(controlName: string, registerParamProps?: RegisterParamProps): RegisterOutputType {
+    // set the control value if the controlFillerFn is supplied
+    (async () => {
+      if (registerParamProps?.controlFillerFn) {
+        if (isAsyncFunction(registerParamProps.controlFillerFn)) {
+          const controlFillerValue = await registerParamProps.controlFillerFn();
+          setValues(prev => ({ ...prev, [controlName]: controlFillerValue }));
+        }
+        if (
+          typeof registerParamProps.controlFillerFn === 'function' &&
+          !isAsyncFunction(registerParamProps.controlFillerFn)
+        ) {
+          const controlFillerValue = registerParamProps.controlFillerFn();
+          setValues(prev => ({ ...prev, [controlName]: controlFillerValue }));
+        }
+      }
+    })();
+
     // function to handle touched state
     function onTouchHandler() {
       setTouchedControls(prev => ({ ...prev, [controlName]: true }));
