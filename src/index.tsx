@@ -4,30 +4,11 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import * as React from 'react';
 import { getDifferenceObject, intersectObjects, scrollToComponent } from '@xmanscript/utils';
-import { IUseFormInputProps } from './@types';
+import { IUseFormInputProps, RegisterOutputType, RegisterParamProps, UseFormOutputType } from './@types';
 import useDebouncedValidation from './hooks/useDebouncedValidation';
 import { getControlId } from './utils/validateValueWithYupSchema';
 import { isAsyncFunction } from './utils/isAsyncFunction';
 import validateFormValues from './utils/validateFormValues';
-
-type SetEnableInputProps = { bindValue: any; bindvalues: any };
-type RegisterParamProps = {
-  setCustomValue: (value: any) => Record<string, any>;
-  setEnable?: ((props: SetEnableInputProps) => boolean) | boolean;
-  controlFillerFn?: (() => Promise<any>) | (() => any);
-};
-
-type RegisterOutputType = {
-  id: string;
-  touchedError: any;
-  error: any;
-  hasError: boolean;
-  touched: boolean;
-  enable: boolean;
-  bindValue: any;
-  onTouchHandler: () => void; // controls will just have to execute this function
-  onChangeHandler: (e: any) => void; // controls will just have to execute this function
-};
 
 function useForm({
   initialValues,
@@ -42,7 +23,7 @@ function useForm({
   onSubmitDataInterceptor,
   isNestedForm,
   preFillerFn,
-}: IUseFormInputProps) {
+}: IUseFormInputProps): UseFormOutputType {
   const [initial, setInitial] = React.useState(initialValues);
 
   const [values, setValues] = React.useState<Record<string, any>>(initial);
@@ -287,7 +268,7 @@ function useForm({
         onTouchHandler();
       }
     }
-    const returnedObj = {
+    return {
       id: getControlId(formName || '', controlName),
       controlName,
       touchedError: touchedErrors[controlName] || null,
@@ -300,7 +281,6 @@ function useForm({
       enable: controlEnable[controlName] || true,
       status: { controlFilling: controlFilling[controlName] || false },
     };
-    return returnedObj;
   }
 
   return {
