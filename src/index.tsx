@@ -4,11 +4,12 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import * as React from 'react';
 import { getDifferenceObject, intersectObjects, scrollToComponent } from '@xmanscript/utils';
-import { IUseFormInputProps, RegisterOutputType, RegisterParamProps, UseFormOutputType } from './@types';
+import { IUseFormInputProps, RegisterOutputType, RegisterParamProps, UseFormOutputType, formStateType } from './@types';
 import useDebouncedValidation from './hooks/useDebouncedValidation';
 import { getControlId } from './utils/validateValueWithYupSchema';
 import { isAsyncFunction } from './utils/isAsyncFunction';
 import validateFormValues from './utils/validateFormValues';
+import FormProvider from './context/FormProvider';
 
 function useForm({
   initialValues,
@@ -16,7 +17,7 @@ function useForm({
   metaData,
   validateOnSubmit,
   touchOnChange,
-  formName = '',
+  formName,
   submitHandler,
   scrollToErrorControl = true,
   onChangeInterceptor,
@@ -32,7 +33,7 @@ function useForm({
   const [touchedControls, setTouchedControls] = React.useState<Record<string, boolean>>({});
   const [controlEnable, setControlEnable] = React.useState<Record<string, boolean>>({});
 
-  const [formState, setFormState] = React.useState<Record<string, boolean>>({
+  const [formState, setFormState] = React.useState<formStateType>({
     isPrefilling: false,
     isSubmitting: false,
     submitionError: false,
@@ -279,7 +280,7 @@ function useForm({
       onTouchHandler,
       onChangeHandler,
       enable: controlEnable[controlName] || true,
-      status: { controlFilling: controlFilling[controlName] || false },
+      controlFilling: controlFilling[controlName] || false,
     };
   }
 
@@ -295,4 +296,4 @@ function useForm({
   };
 }
 
-export default useForm;
+export { useForm, FormProvider };
