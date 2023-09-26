@@ -2,6 +2,9 @@
 
 import { Schema } from 'yup';
 
+// ****************************************************
+// ***************** interface ************************
+// ****************************************************
 export interface IRegisterProps
   extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange' | 'onFocus' | 'onAbort'> {
   bindvalue: any;
@@ -33,8 +36,8 @@ export type SyncPrefillerFunction = () => Record<string, any>;
 export type AsyncPrefillerFunction = () => Promise<Record<string, any>>;
 
 export interface IUseFormInputProps {
+  formName: string;
   initialValues: Record<string, any>;
-  formName?: string;
   validationSchema?: Schema<any> | ((values: Record<string, unknown>) => Record<string, any>);
   onChangeInterceptor?: (props: IOnChangeInterceptorInput) => Record<string, any>;
   onSubmitDataInterceptor?: (data: Record<string, any>) => Record<string, any>;
@@ -58,8 +61,9 @@ export interface IRegisterPropType {
   disableFunc?: (data: Record<string, any>) => boolean;
 }
 
+// ************************************************
 // ***************** types ************************
-type ControlRegisterStatus = { controlFilling: boolean };
+// ************************************************
 
 export type RegisterOutputType = {
   id: string;
@@ -72,7 +76,7 @@ export type RegisterOutputType = {
   onTouchHandler: () => void; // controls will just have to execute this function
   onChangeHandler: (e: any) => void; // controls will just have to execute this function
   controlName: string;
-  status: ControlRegisterStatus;
+  controlFilling: boolean;
 };
 
 type SetEnableInputProps = { bindValue: any; bindvalues: any };
@@ -82,15 +86,33 @@ export type RegisterParamProps = {
   controlFillerFn?: (() => Promise<any>) | (() => any);
 };
 
+export type formStateType = {
+  isPrefilling: boolean;
+  isSubmitting: boolean;
+  submitionError: boolean;
+  hasError: boolean;
+  isValidating: boolean;
+  isControlPrefilling: boolean;
+};
+
 export type UseFormOutputType = {
   bindValues: Record<string, any>;
   setBindValues: React.Dispatch<React.SetStateAction<Record<string, any>>>;
   errors: Record<string, any>;
   setErrors: React.Dispatch<React.SetStateAction<Record<string, any>>>;
-  formState: Record<string, boolean>;
+  formState: formStateType;
   register: (controlName: string, registerParamProps?: RegisterParamProps) => RegisterOutputType;
   onSubmitHandler: (
     e: React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => Promise<void>;
-  setFormState: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
+  setFormState: React.Dispatch<React.SetStateAction<formStateType>>;
+};
+
+// export type UpdateFormStateProps = { formName: string; update: Record<keyof Partial<formStateType>, boolean> };
+export type UpdateFormStateProps = { formName: string; update: Partial<formStateType> };
+
+export type ContextValueType = {
+  formState: Record<string, formStateType>;
+  registerFormToContext: (formName: string) => void;
+  updateFormState: ({ formName, update }: UpdateFormStateProps) => void;
 };

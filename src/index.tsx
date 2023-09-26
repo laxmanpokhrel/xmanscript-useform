@@ -4,11 +4,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import * as React from 'react';
 import { getDifferenceObject, intersectObjects, scrollToComponent } from '@xmanscript/utils';
-import { IUseFormInputProps, RegisterOutputType, RegisterParamProps, UseFormOutputType } from './@types';
+import { IUseFormInputProps, RegisterOutputType, RegisterParamProps, UseFormOutputType, formStateType } from './@types';
 import useDebouncedValidation from './hooks/useDebouncedValidation';
 import { getControlId } from './utils/validateValueWithYupSchema';
 import { isAsyncFunction } from './utils/isAsyncFunction';
 import validateFormValues from './utils/validateFormValues';
+import FormProvider from './context/FormProvider';
+import formContext from './context/formContext';
 
 function useForm({
   initialValues,
@@ -16,7 +18,7 @@ function useForm({
   metaData,
   validateOnSubmit,
   touchOnChange,
-  formName = '',
+  formName,
   submitHandler,
   scrollToErrorControl = true,
   onChangeInterceptor,
@@ -24,6 +26,16 @@ function useForm({
   isNestedForm,
   preFillerFn,
 }: IUseFormInputProps): UseFormOutputType {
+  const formContextState = React.useContext(formContext);
+
+  React.useEffect(() => {
+    // if not wrapped with FormProvider then throw error
+    if (!formContextState) throw new Error('useForm must be used within a component wrapped with FormProvider');
+
+    // register form to context
+    formContextState.registerFormToContext(formName);
+  }, []);
+
   const [initial, setInitial] = React.useState(initialValues);
 
   const [values, setValues] = React.useState<Record<string, any>>(initial);
@@ -32,7 +44,7 @@ function useForm({
   const [touchedControls, setTouchedControls] = React.useState<Record<string, boolean>>({});
   const [controlEnable, setControlEnable] = React.useState<Record<string, boolean>>({});
 
-  const [formState, setFormState] = React.useState<Record<string, boolean>>({
+  const [formState, setFormState] = React.useState<formStateType>({
     isPrefilling: false,
     isSubmitting: false,
     submitionError: false,
@@ -50,11 +62,14 @@ function useForm({
           if (isAsyncFunction(preFillerFn)) {
             // set prefilling state
             setFormState(prev => ({ ...prev, isPrefilling: true }));
+            // update state to context as well
+            formContextState?.updateFormState({ formName, update: { isPrefilling: true } });
 
             preFillValues = await preFillerFn();
 
             // set prefilling state
             setFormState(prev => ({ ...prev, isPrefilling: false }));
+            formContextState?.updateFormState({ formName, update: { isPrefilling: false } });
           }
           if (!isAsyncFunction(preFillerFn)) {
             preFillValues = preFillerFn();
@@ -83,6 +98,8 @@ function useForm({
 
         // set form error state
         setFormState(prev => ({ ...prev, hasError: !!Object.keys(errorObject).length }));
+        formContextState?.updateFormState({ formName, update: { hasError: !!Object.keys(errorObject).length } });
+
         // set error for only touched controls
         setTouchedErrors(intersectObjects(touchedControls, errorObject));
       },
@@ -105,6 +122,8 @@ function useForm({
 
         // set form error state
         setFormState(prev => ({ ...prev, hasError: !!Object.keys(errorObject).length }));
+        // update to context as well
+        formContextState?.updateFormState({ formName, update: { hasError: !!Object.keys(errorObject).length } });
 
         // also set the touched error
         setTouchedErrors(errorObject);
@@ -132,6 +151,9 @@ function useForm({
           // set submitting status
           setFormState(prev => ({ ...prev, isSubmitting: true }));
 
+          // update to context as well
+          formContextState?.updateFormState({ formName, update: { isSubmitting: true } });
+
           // submit handler will take the package ready to perform submit action and a difference object between initial values set and package ready
           await submitHandler({
             package: onSubmitDataInterceptor ? onSubmitDataInterceptor(values) : values,
@@ -142,6 +164,9 @@ function useForm({
 
           // set submitting status
           setFormState(prev => ({ ...prev, isSubmitting: false }));
+
+          // update to context as well
+          formContextState?.updateFormState({ formName, update: { isSubmitting: false } });
         }
         // if submit handler is not asyncronous function then
         if (!isAsyncFunction(submitHandler)) {
@@ -156,9 +181,15 @@ function useForm({
       }
       // set submition status
       setFormState(prev => ({ ...prev, submitionError: false }));
+
+      // update to context as well
+      formContextState?.updateFormState({ formName, update: { submitionError: false } });
     } catch (error: any) {
       // set submition status
       setFormState(prev => ({ ...prev, submitionError: true }));
+
+      // update to context as well
+      formContextState?.updateFormState({ formName, update: { submitionError: true } });
       throw new Error(`Error While Submiting Form. ${error}`);
     }
   }
@@ -170,14 +201,27 @@ function useForm({
         if (isAsyncFunction(registerParamProps.controlFillerFn)) {
           // set control filling to true
           setControlFilling(prev => ({ ...prev, [controlName]: true }));
-          setFormState(prev => ({ ...prev, isControlFilling: true }));
 
+          // set the form state too
+          setFormState(prev => ({ ...prev, isControlPrefilling: true }));
+
+          // update to context as well
+          formContextState?.updateFormState({ formName, update: { isControlPrefilling: true } });
+
+          // get values from controlFillerFn
           const controlFillerValue = await registerParamProps.controlFillerFn();
+
+          // set the received value
           setValues(prev => ({ ...prev, [controlName]: controlFillerValue }));
 
           // set control filling to false
           setControlFilling(prev => ({ ...prev, [controlName]: false }));
-          setFormState(prev => ({ ...prev, isControlFilling: false }));
+
+          // set the form state too
+          setFormState(prev => ({ ...prev, isControlPrefilling: false }));
+
+          // update to context as well
+          formContextState?.updateFormState({ formName, update: { isControlPrefilling: false } });
         }
         if (
           typeof registerParamProps.controlFillerFn === 'function' &&
@@ -279,7 +323,7 @@ function useForm({
       onTouchHandler,
       onChangeHandler,
       enable: controlEnable[controlName] || true,
-      status: { controlFilling: controlFilling[controlName] || false },
+      controlFilling: controlFilling[controlName] || false,
     };
   }
 
@@ -295,4 +339,4 @@ function useForm({
   };
 }
 
-export default useForm;
+export { useForm, FormProvider };
