@@ -1,8 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import * as React from 'react';
-
 import FormContext from './formContext';
-import { formStateType } from '../@types';
+import { ContextValueType, UpdateFormStateProps, formStateType } from '../@types';
 
 const FormProvider = ({ children }: { children: React.ReactNode }) => {
   // initial state of every form
@@ -25,12 +24,12 @@ const FormProvider = ({ children }: { children: React.ReactNode }) => {
   function registerFormToContext(formName: string) {
     setFormState(prev => ({ ...prev, [formName]: initialFormState }));
   }
-  function updateFormState({ formName, key, value }: { formName: string; key: string; value: boolean }) {
-    setFormState(prev => ({ ...prev, [formName]: { ...prev[formName], [key]: value } }));
+  function updateFormState({ formName, update }: UpdateFormStateProps) {
+    setFormState(prev => ({ ...prev, [formName]: { ...prev[formName], ...update } }));
   }
 
   // Wrap the context value object in useMemo
-  const contextValue = React.useMemo(() => {
+  const contextValue: ContextValueType = React.useMemo(() => {
     return { formState, registerFormToContext, updateFormState };
   }, [formState]);
 

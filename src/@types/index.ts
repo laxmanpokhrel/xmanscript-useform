@@ -107,3 +107,12 @@ export type UseFormOutputType = {
   ) => Promise<void>;
   setFormState: React.Dispatch<React.SetStateAction<formStateType>>;
 };
+
+// export type UpdateFormStateProps = { formName: string; update: Record<keyof Partial<formStateType>, boolean> };
+export type UpdateFormStateProps = { formName: string; update: Partial<formStateType> };
+
+export type ContextValueType = {
+  formState: Record<string, formStateType>;
+  registerFormToContext: (formName: string) => void;
+  updateFormState: ({ formName, update }: UpdateFormStateProps) => void;
+};
