@@ -112,7 +112,7 @@ export type UseFormOutputType = {
 export type UpdateFormStateProps = { formName: string; update: Partial<formStateType> };
 
 export type ContextValueType = {
-  formState: Record<string, formStateType>;
+  formData: { state: Record<string, formStateType>; data: Record<string, any> };
   registerFormToContext: (formName: string) => void;
   updateFormState: ({ formName, update }: UpdateFormStateProps) => void;
 };

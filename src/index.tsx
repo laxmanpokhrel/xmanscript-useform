@@ -11,6 +11,8 @@ import { isAsyncFunction } from './utils/isAsyncFunction';
 import validateFormValues from './utils/validateFormValues';
 import FormProvider from './context/FormProvider';
 import formContext from './context/formContext';
+import { defaultFormState } from './constants';
+import useFormState from './hooks/useFormState';
 
 function useForm({
   initialValues,
@@ -26,16 +28,6 @@ function useForm({
   isNestedForm,
   preFillerFn,
 }: IUseFormInputProps): UseFormOutputType {
-  const formContextState = React.useContext(formContext);
-
-  React.useEffect(() => {
-    // if not wrapped with FormProvider then throw error
-    if (!formContextState) throw new Error('useForm must be used within a component wrapped with FormProvider');
-
-    // register form to context
-    formContextState.registerFormToContext(formName);
-  }, []);
-
   const [initial, setInitial] = React.useState(initialValues);
 
   const [values, setValues] = React.useState<Record<string, any>>(initial);
@@ -44,16 +36,19 @@ function useForm({
   const [touchedControls, setTouchedControls] = React.useState<Record<string, boolean>>({});
   const [controlEnable, setControlEnable] = React.useState<Record<string, boolean>>({});
 
-  const [formState, setFormState] = React.useState<formStateType>({
-    isPrefilling: false,
-    isSubmitting: false,
-    submitionError: false,
-    hasError: false,
-    isValidating: false,
-    isControlPrefilling: false,
-  });
+  const [formState, setFormState] = React.useState<formStateType>(defaultFormState);
   const [controlFilling, setControlFilling] = React.useState<Record<string, boolean>>({});
 
+  const formContextState = React.useContext(formContext);
+  React.useEffect(() => {
+    // if not wrapped with FormProvider then throw error
+    if (!formContextState) throw new Error('useForm must be used within a component wrapped with FormProvider');
+
+    // register form to context
+    formContextState.registerFormToContext(formName);
+  }, []);
+
+  // handle prefilling of the form
   React.useEffect(() => {
     (async () => {
       if (preFillerFn) {
@@ -62,18 +57,24 @@ function useForm({
           if (isAsyncFunction(preFillerFn)) {
             // set prefilling state
             setFormState(prev => ({ ...prev, isPrefilling: true }));
+
             // update state to context as well
             formContextState?.updateFormState({ formName, update: { isPrefilling: true } });
 
+            // get the prefill values
             preFillValues = await preFillerFn();
 
             // set prefilling state
             setFormState(prev => ({ ...prev, isPrefilling: false }));
+
+            // update to context as well
             formContextState?.updateFormState({ formName, update: { isPrefilling: false } });
           }
+
           if (!isAsyncFunction(preFillerFn)) {
             preFillValues = preFillerFn();
           }
+
           // set initialValueCache
           setInitial(preFillValues);
           setValues(preFillValues);
@@ -98,6 +99,8 @@ function useForm({
 
         // set form error state
         setFormState(prev => ({ ...prev, hasError: !!Object.keys(errorObject).length }));
+
+        // update to context as well
         formContextState?.updateFormState({ formName, update: { hasError: !!Object.keys(errorObject).length } });
 
         // set error for only touched controls
@@ -122,6 +125,7 @@ function useForm({
 
         // set form error state
         setFormState(prev => ({ ...prev, hasError: !!Object.keys(errorObject).length }));
+
         // update to context as well
         formContextState?.updateFormState({ formName, update: { hasError: !!Object.keys(errorObject).length } });
 
@@ -130,8 +134,10 @@ function useForm({
         const errorKeysAfterValidation = Object.keys(errorObject);
 
         // set all touched controls to true
-        const touchedObject = errorKeysAfterValidation?.reduce((obj, item) => ({ ...obj, [item]: true }), {});
-        setTouchedControls(prev => ({ ...prev, ...touchedObject }));
+        const touchedStateObject = errorKeysAfterValidation?.reduce((obj, item) => ({ ...obj, [item]: true }), {});
+
+        // set the state of touched control with touchedObject
+        setTouchedControls(prev => ({ ...prev, ...touchedStateObject }));
 
         // if `scrollToErrorControl` is true and has error then we scroll to the first control with error
         if (scrollToErrorControl && Object.keys(errorObject).length) {
@@ -339,4 +345,4 @@ function useForm({
   };
 }
 
-export { useForm, FormProvider };
+export { useForm, FormProvider, useFormState };
