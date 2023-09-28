@@ -1,25 +1,41 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import * as React from 'react';
 import FormContext from './formContext';
-import { ContextValueType, UpdateFormStateProps } from '../@types';
-import { initialFormState, state } from '../constants';
+import { ContextValueType, UpdateFormDataProps, UpdateFormStateProps } from '../@types';
+import { fromContextInitialState, singleFormInitialState } from '../constants';
 
 const FormProvider = ({ children }: { children: React.ReactNode }) => {
-  const [formState, setFormState] = React.useState(state);
+  const [formState, setFormState] = React.useState(fromContextInitialState);
 
   // function to add form to context
   function registerFormToContext(formName: string) {
-    setFormState(prev => ({ ...prev, [formName]: initialFormState }));
+    setFormState(prev => ({ ...prev, [formName]: singleFormInitialState }));
   }
 
-  // function to handle update of the form state
+  // function to handle update of the form states
   function updateFormState({ formName, update }: UpdateFormStateProps) {
-    setFormState(prev => ({ ...prev, [formName]: { ...prev[formName], ...update } }));
+    setFormState(prev => ({
+      ...prev,
+      [formName]: { ...prev[formName], state: { ...prev[formName].state, ...update } },
+    }));
+  }
+
+  // function to handle update of the form values
+  function updateFormData({ formName, update }: UpdateFormDataProps) {
+    setFormState(prev => ({
+      ...prev,
+      [formName]: { ...prev[formName], values: { ...prev[formName].values, ...update } },
+    }));
   }
 
   // Wrap the context value object in useMemo
   const contextValue: ContextValueType = React.useMemo(() => {
-    return { formData: { state: formState, data: {} }, registerFormToContext, updateFormState };
+    return {
+      formContextData: formState,
+      registerFormToContext,
+      updateFormState,
+      updateFormData,
+    };
   }, [formState]);
 
   return <FormContext.Provider value={contextValue}>{children}</FormContext.Provider>;

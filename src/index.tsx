@@ -291,6 +291,9 @@ function useForm({
           });
         }
         setValues(interceptedValues);
+
+        // also set the context
+        formContextState?.updateFormData({ formName, update: { interceptedValues } });
         // we do not continue executing after this
         return;
       }
@@ -299,18 +302,27 @@ function useForm({
       // if argument is an event
       if (isOnChangeEvent) {
         event.stopPropagation();
-
-        setValues(prev => ({
-          ...prev,
+        const valuesToUpdate = {
+          ...values,
           [controlName]: registerParamProps?.setCustomValue
             ? registerParamProps.setCustomValue(event.target.value)
             : event.target.value,
-        }));
+        };
+        // update the values
+        setValues(valuesToUpdate);
+
+        // also set the context
+        formContextState?.updateFormData({ formName, update: { valuesToUpdate } });
       } else {
-        setValues(prev => ({
-          ...prev,
+        const valuesToUpdate = {
+          ...values,
           [controlName]: registerParamProps?.setCustomValue ? registerParamProps.setCustomValue(event) : event,
-        }));
+        };
+        // update the values
+        setValues(valuesToUpdate);
+
+        // also set the context
+        formContextState?.updateFormData({ formName, update: { valuesToUpdate } });
       }
 
       // update the touched state if it is `true`

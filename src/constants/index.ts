@@ -1,4 +1,4 @@
-import { formStateType } from '../@types';
+import { formContextStateType } from '../@types';
 
 // default form State
 export const defaultFormState = {
@@ -11,14 +11,17 @@ export const defaultFormState = {
 };
 
 // current state of the form
-export const state: Record<string, formStateType> = {};
+export const fromContextInitialState: Record<string, formContextStateType> = {};
 
 // initial state of every form
-export const initialFormState: formStateType = {
-  isPrefilling: false,
-  isSubmitting: false,
-  submitionError: false,
-  hasError: false,
-  isValidating: false,
-  isControlPrefilling: false,
+export const singleFormInitialState: formContextStateType = {
+  state: {
+    isPrefilling: false,
+    isSubmitting: false,
+    submitionError: false,
+    hasError: false,
+    isValidating: false,
+    isControlPrefilling: false,
+  },
+  values: {},
 };
