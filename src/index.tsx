@@ -357,6 +357,7 @@ function useForm({
     setBindValues: setValues,
     errors,
     setErrors,
+    touchedErrors,
     formState,
     register,
     onSubmitHandler,

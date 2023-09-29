@@ -47,6 +47,7 @@ export type UseFormOutputType = {
   bindValues: Record<string, any>;
   setBindValues: React.Dispatch<React.SetStateAction<Record<string, any>>>;
   errors: Record<string, any>;
+  touchedErrors: Record<string, any>;
   setErrors: React.Dispatch<React.SetStateAction<Record<string, any>>>;
   formState: formStateType;
   register: (controlName: string, registerParamProps?: RegisterParamProps) => RegisterOutputType;
