@@ -27,9 +27,9 @@ function useForm({
   onSubmitDataInterceptor,
   isNestedForm,
   preFillerFn,
+  controlFillers,
 }: IUseFormInputProps): UseFormOutputType {
   const [initial, setInitial] = React.useState(initialValues);
-
   const [values, setValues] = React.useState<Record<string, any>>(initial);
   const [errors, setErrors] = React.useState<Record<string, any>>({});
   const [touchedErrors, setTouchedErrors] = React.useState<Record<string, any>>({});
@@ -37,18 +37,15 @@ function useForm({
   const [controlEnable, setControlEnable] = React.useState<Record<string, boolean>>({});
 
   const [formState, setFormState] = React.useState<formStateType>(defaultFormState);
-  const [controlFilling, setControlFilling] = React.useState<Record<string, boolean>>({});
+  const [controlfilling, setControlfilling] = React.useState<Record<string, boolean>>({});
 
   const formContextState = React.useContext(formContext);
   React.useEffect(() => {
-    // if not wrapped with FormProvider then throw error
-    if (!formContextState) throw new Error('useForm must be used within a component wrapped with FormProvider');
-
     // register form to context
-    formContextState.registerFormToContext(formName);
+    formContextState?.registerFormToContext(formName);
   }, []);
 
-  // handle prefilling of the form
+  // handle prefilling form and control prefilling
   React.useEffect(() => {
     (async () => {
       if (preFillerFn) {
@@ -56,19 +53,19 @@ function useForm({
           let preFillValues: Record<string, any> = {};
           if (isAsyncFunction(preFillerFn)) {
             // set prefilling state
-            setFormState(prev => ({ ...prev, isPrefilling: true }));
+            setFormState(prev => ({ ...prev, isPreFilling: true }));
 
             // update state to context as well
-            formContextState?.updateFormState({ formName, update: { isPrefilling: true } });
+            formContextState?.updateFormState({ formName, update: { isPreFillingForm: true } });
 
             // get the prefill values
             preFillValues = await preFillerFn();
 
             // set prefilling state
-            setFormState(prev => ({ ...prev, isPrefilling: false }));
+            setFormState(prev => ({ ...prev, isPreFilling: false }));
 
             // update to context as well
-            formContextState?.updateFormState({ formName, update: { isPrefilling: false } });
+            formContextState?.updateFormState({ formName, update: { isPreFillingForm: false } });
           }
 
           if (!isAsyncFunction(preFillerFn)) {
@@ -83,6 +80,41 @@ function useForm({
         }
       }
     })();
+
+    // set the control value if the controlFillers is supplied
+    if (controlFillers) {
+      Object.entries(controlFillers).map(async ([key, value]) => {
+        if (isAsyncFunction(value)) {
+          // set control filling to true
+          setControlfilling(prev => ({ ...prev, [key]: true }));
+
+          // set the form state too
+          setFormState(prev => ({ ...prev, isControlPreFilling: true }));
+
+          // update to context as well
+          formContextState?.updateFormState({ formName, update: { isControlFilling: true } });
+
+          // get values from controlFillerFn
+          const controlFillerValue = await value();
+
+          // set the received value
+          setValues(prev => ({ ...prev, [key]: controlFillerValue }));
+
+          // set control filling to false
+          setControlfilling(prev => ({ ...prev, [key]: false }));
+
+          // set the form state too
+          setFormState(prev => ({ ...prev, isControlFilling: false }));
+
+          // update to context as well
+          formContextState?.updateFormState({ formName, update: { isControlFilling: false } });
+        }
+        if (typeof value === 'function' && !isAsyncFunction(value)) {
+          const controlFillerValue = value();
+          setValues(prev => ({ ...prev, [key]: controlFillerValue }));
+        }
+      });
+    }
   }, []);
 
   // validate for no validateOnSubmit
@@ -201,44 +233,6 @@ function useForm({
   }
 
   function register(controlName: string, registerParamProps?: RegisterParamProps): RegisterOutputType {
-    // set the control value if the controlFillerFn is supplied
-    (async () => {
-      if (registerParamProps?.controlFillerFn) {
-        if (isAsyncFunction(registerParamProps.controlFillerFn)) {
-          // set control filling to true
-          setControlFilling(prev => ({ ...prev, [controlName]: true }));
-
-          // set the form state too
-          setFormState(prev => ({ ...prev, isControlPrefilling: true }));
-
-          // update to context as well
-          formContextState?.updateFormState({ formName, update: { isControlPrefilling: true } });
-
-          // get values from controlFillerFn
-          const controlFillerValue = await registerParamProps.controlFillerFn();
-
-          // set the received value
-          setValues(prev => ({ ...prev, [controlName]: controlFillerValue }));
-
-          // set control filling to false
-          setControlFilling(prev => ({ ...prev, [controlName]: false }));
-
-          // set the form state too
-          setFormState(prev => ({ ...prev, isControlPrefilling: false }));
-
-          // update to context as well
-          formContextState?.updateFormState({ formName, update: { isControlPrefilling: false } });
-        }
-        if (
-          typeof registerParamProps.controlFillerFn === 'function' &&
-          !isAsyncFunction(registerParamProps.controlFillerFn)
-        ) {
-          const controlFillerValue = registerParamProps.controlFillerFn();
-          setValues(prev => ({ ...prev, [controlName]: controlFillerValue }));
-        }
-      }
-    })();
-
     // function to handle touched state
     function onTouchHandler() {
       setTouchedControls(prev => ({ ...prev, [controlName]: true }));
@@ -330,18 +324,21 @@ function useForm({
         onTouchHandler();
       }
     }
+    // expect event listeners other attributes should be in small case because they will be passed to our components as probs
     return {
       id: getControlId(formName || '', controlName),
-      controlName,
-      touchedError: touchedErrors[controlName] || null,
+      controlname: controlName,
+      touchederror: touchedErrors[controlName] || null,
       error: errors[controlName] || null,
-      hasError: !!errors[controlName],
+      haserror: !!errors[controlName],
       touched: !!touchedControls[controlName],
-      bindValue: values[controlName],
+      bindvalue: values[controlName],
+      value: values[controlName],
       onTouchHandler,
       onChangeHandler,
+      onChange: onChangeHandler,
       enable: controlEnable[controlName] || true,
-      controlFilling: controlFilling[controlName] || false,
+      controlfilling: controlfilling[controlName] || false,
     };
   }
 
