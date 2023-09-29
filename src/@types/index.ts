@@ -68,7 +68,7 @@ export type ContextValueType = {
 
 export type useFormDataOutput = Record<string, any>;
 
-export type SubmitHandlerInputProps = { package: Record<string, any>; differencePackage: Record<string, any> };
+export type SubmitHandlerInputProps = { packet: Record<string, any>; differencePacket: Record<string, any> };
 export type AsyncFunction = (values: Record<string, any>) => Promise<void>;
 export type SyncSubmitHandlerFunction = (props: SubmitHandlerInputProps) => void;
 export type AsyncSubmitHandlerFunction = (props: SubmitHandlerInputProps) => Promise<void>;

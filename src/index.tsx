@@ -100,6 +100,9 @@ function useForm({
           // set the received value
           setValues(prev => ({ ...prev, [key]: controlFillerValue }));
 
+          // set the initial to find the different object for submit handler
+          setInitial(prev => ({ ...prev, [key]: controlFillerValue }));
+
           // set control filling to false
           setControlfilling(prev => ({ ...prev, [key]: false }));
 
@@ -110,8 +113,14 @@ function useForm({
           formContextState?.updateFormState({ formName, update: { isControlFilling: false } });
         }
         if (typeof value === 'function' && !isAsyncFunction(value)) {
+          // get values from controlFillerFn
           const controlFillerValue = value();
+
+          // set the received value
           setValues(prev => ({ ...prev, [key]: controlFillerValue }));
+
+          // set the initial to find the different object for submit handler
+          setInitial(prev => ({ ...prev, [key]: controlFillerValue }));
         }
       });
     }
@@ -192,10 +201,10 @@ function useForm({
           // update to context as well
           formContextState?.updateFormState({ formName, update: { isSubmitting: true } });
 
-          // submit handler will take the package ready to perform submit action and a difference object between initial values set and package ready
+          // submit handler will take the packet ready to perform submit action and a difference object between initial values set and packet ready
           await submitHandler({
-            package: onSubmitDataInterceptor ? onSubmitDataInterceptor(values) : values,
-            differencePackage: onSubmitDataInterceptor
+            packet: onSubmitDataInterceptor ? onSubmitDataInterceptor(values) : values,
+            differencePacket: onSubmitDataInterceptor
               ? getDifferenceObject(initial, onSubmitDataInterceptor(values))
               : getDifferenceObject(initial, values),
           });
@@ -206,12 +215,13 @@ function useForm({
           // update to context as well
           formContextState?.updateFormState({ formName, update: { isSubmitting: false } });
         }
+
         // if submit handler is not asyncronous function then
         if (!isAsyncFunction(submitHandler)) {
           if (submitHandler)
             submitHandler({
-              package: onSubmitDataInterceptor ? onSubmitDataInterceptor(values) : values,
-              differencePackage: onSubmitDataInterceptor
+              packet: onSubmitDataInterceptor ? onSubmitDataInterceptor(values) : values,
+              differencePacket: onSubmitDataInterceptor
                 ? getDifferenceObject(initial, onSubmitDataInterceptor(values))
                 : getDifferenceObject(initial, values),
             });
