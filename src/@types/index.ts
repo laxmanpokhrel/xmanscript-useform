@@ -49,6 +49,8 @@ export type RegisterParamProps = {
 export type formContextStateType = {
   state: formStateType;
   values: Record<string, any>;
+  errors: Record<string, any>;
+  touchedErrors: Record<string, any>;
 };
 
 export type UseFormOutputType = {
@@ -68,12 +70,16 @@ export type UseFormOutputType = {
 
 export type UpdateFormStateProps = { formName: string; update: Partial<formStateType> };
 export type UpdateFormDataProps = { formName: string; update: Record<string, any> };
+export type UpdateFormErrorsProps = { formName: string; update: Record<string, any> };
+export type UpdateFormTouchedErrorsProps = { formName: string; update: Record<string, any> };
 
 export type ContextValueType = {
   formContextData: Record<string, formContextStateType>;
   initializeFormToContext: (formName: string) => void;
   updateFormState: ({ formName, update }: UpdateFormStateProps) => void;
   updateFormData: ({ formName, update }: UpdateFormDataProps) => void;
+  updateFormErrors: ({ formName, update }: UpdateFormErrorsProps) => void;
+  updateFormTouchedErrors: ({ formName, update }: UpdateFormTouchedErrorsProps) => void;
 };
 
 export type useFormDataOutput = Record<string, any>;

@@ -20,6 +20,22 @@ const FormProvider = ({ children }: { children: React.ReactNode }) => {
     }));
   }
 
+  // function to handle update of the form states
+  function updateFormErrors({ formName, update }: UpdateFormStateProps) {
+    setFormState(prev => ({
+      ...prev,
+      [formName]: { ...prev[formName], errors: { ...prev[formName].errors, ...update } },
+    }));
+  }
+
+  // function to handle update of the form states
+  function updateFormTouchedErrors({ formName, update }: UpdateFormStateProps) {
+    setFormState(prev => ({
+      ...prev,
+      [formName]: { ...prev[formName], touchedErrors: { ...prev[formName].touchedErrors, ...update } },
+    }));
+  }
+
   // function to handle update of the form values
   function updateFormData({ formName, update }: UpdateFormDataProps) {
     setFormState(prev => ({
@@ -35,6 +51,8 @@ const FormProvider = ({ children }: { children: React.ReactNode }) => {
       initializeFormToContext,
       updateFormState,
       updateFormData,
+      updateFormErrors,
+      updateFormTouchedErrors,
     };
   }, [formState]);
 

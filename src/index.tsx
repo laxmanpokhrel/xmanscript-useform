@@ -19,8 +19,7 @@ import validateFormValues from './utils/validateFormValues';
 import FormProvider from './context/FormProvider';
 import formContext from './context/formContext';
 import { defaultFormState } from './constants';
-import useFormState from './hooks/useFormState';
-import useFormData from './hooks/useFormData';
+import useFormContextData from './hooks/useFormContextData';
 
 function useForm({
   initialValues,
@@ -75,11 +74,29 @@ function useForm({
     parcel: parcel || {},
   };
 
-  // update the context when value changes
+  // update the errors of the context when errors change
+  React.useEffect(() => {
+    if (!formContextState) return;
+    formContextState?.updateFormErrors({ formName, update: errors });
+  }, [errors]);
+
+  // update the touchedErrors of the context when touchedErrors change
+  React.useEffect(() => {
+    if (!formContextState) return;
+    formContextState?.updateFormTouchedErrors({ formName, update: touchedErrors });
+  }, [touchedErrors]);
+
+  // update the values of the context when values change
   React.useEffect(() => {
     if (!formContextState) return;
     formContextState?.updateFormData({ formName, update: values });
   }, [values]);
+
+  // update the state of the  context when state changes
+  React.useEffect(() => {
+    if (!formContextState) return;
+    formContextState?.updateFormState({ formName, update: formState });
+  }, [formState]);
 
   // handle prefilling form and control prefilling
   React.useEffect(() => {
@@ -87,26 +104,21 @@ function useForm({
       if (preFillerFn) {
         try {
           let preFillValues: Record<string, any> = {};
+
+          // set isPreFillingForm state
+          setFormState(prev => ({ ...prev, isPreFillingForm: true }));
+
           if (isAsyncFunction(preFillerFn)) {
-            // set prefilling state
-            setFormState(prev => ({ ...prev, isPreFilling: true }));
-
-            // update state to context as well
-            formContextState?.updateFormState({ formName, update: { isPreFillingForm: true } });
-
             // get the prefill values
             preFillValues = await preFillerFn();
-
-            // set prefilling state
-            setFormState(prev => ({ ...prev, isPreFilling: false }));
-
-            // update to context as well
-            formContextState?.updateFormState({ formName, update: { isPreFillingForm: false } });
           }
 
           if (!isAsyncFunction(preFillerFn)) {
             preFillValues = preFillerFn();
           }
+
+          // set isPreFillingForm state
+          setFormState(prev => ({ ...prev, isPreFilling: false }));
 
           // set initialValueCache
           setInitial(preFillValues);
@@ -118,20 +130,17 @@ function useForm({
     })();
 
     // set the control value if the controlFillers is supplied
-    if (controlFillers) {
-      Object.entries(controlFillers).map(async ([key, value]) => {
-        if (isAsyncFunction(value)) {
+    if (typeof controlFillers === 'object') {
+      // set the form state too
+      setFormState(prev => ({ ...prev, isControlFilling: true }));
+
+      Object.entries(controlFillers).map(async ([key, func]) => {
+        if (isAsyncFunction(func)) {
           // set control filling to true
           setControlFilling(prev => ({ ...prev, [key]: true }));
 
-          // set the form state too
-          setFormState(prev => ({ ...prev, isControlPreFilling: true }));
-
-          // update to context as well
-          formContextState?.updateFormState({ formName, update: { isControlFilling: true } });
-
           // get values from controlFillerFn
-          const controlFillerValue = await value();
+          const controlFillerValue = await func();
 
           // set the received value
           setValues(prev => ({ ...prev, [key]: controlFillerValue }));
@@ -141,16 +150,10 @@ function useForm({
 
           // set control filling to false
           setControlFilling(prev => ({ ...prev, [key]: false }));
-
-          // set the form state too
-          setFormState(prev => ({ ...prev, isControlFilling: false }));
-
-          // update to context as well
-          formContextState?.updateFormState({ formName, update: { isControlFilling: false } });
         }
-        if (typeof value === 'function' && !isAsyncFunction(value)) {
+        if (typeof func === 'function' && !isAsyncFunction(func)) {
           // get values from controlFillerFn
-          const controlFillerValue = value();
+          const controlFillerValue = func();
 
           // set the received value
           setValues(prev => ({ ...prev, [key]: controlFillerValue }));
@@ -159,6 +162,9 @@ function useForm({
           setInitial(prev => ({ ...prev, [key]: controlFillerValue }));
         }
       });
+
+      // set the form state too
+      setFormState(prev => ({ ...prev, isControlFilling: false }));
     }
   }, []);
 
@@ -175,9 +181,6 @@ function useForm({
 
       // set form error state
       setFormState(prev => ({ ...prev, hasError: !!Object.keys(errorObject).length }));
-
-      // update to context as well
-      formContextState?.updateFormState({ formName, update: { hasError: !!Object.keys(errorObject).length } });
 
       // set error for only touched controls
       setTouchedErrors(intersectObjects(touchedControls, errorObject));
@@ -200,9 +203,6 @@ function useForm({
 
         // set form error state
         setFormState(prev => ({ ...prev, hasError: !!Object.keys(errorObject).length }));
-
-        // update to context as well
-        formContextState?.updateFormState({ formName, update: { hasError: !!Object.keys(errorObject).length } });
 
         // also set the touched error
         setTouchedErrors(errorObject);
@@ -232,9 +232,6 @@ function useForm({
           // set submitting status
           setFormState(prev => ({ ...prev, isSubmitting: true }));
 
-          // update to context as well
-          formContextState?.updateFormState({ formName, update: { isSubmitting: true } });
-
           // submit handler will take the packet ready to perform submit action and a difference object between initial values set and packet ready
           await submitHandler(
             {
@@ -250,36 +247,33 @@ function useForm({
           // set submitting status
           setFormState(prev => ({ ...prev, isSubmitting: false }));
 
-          // update to context as well
-          formContextState?.updateFormState({ formName, update: { isSubmitting: false } });
+          // // update to context as well
+          // formContextState?.updateFormState({ formName, update: { isSubmitting: false } });
         }
 
         // if submit handler is not asyncronous function then
         if (!isAsyncFunction(submitHandler)) {
-          if (submitHandler)
-            submitHandler(
-              {
-                currentPacket: onSubmitDataInterceptor ? onSubmitDataInterceptor(values, sandBoxObject) : values,
-                differencePacket: onSubmitDataInterceptor
-                  ? getDifferenceObject(initial, onSubmitDataInterceptor(values, sandBoxObject))
-                  : getDifferenceObject(initial, values),
-                initialPacket: initial,
-              },
-              sandBoxObject
-            );
+          // set submition status
+          setFormState(prev => ({ ...prev, submitionError: true }));
+
+          submitHandler(
+            {
+              currentPacket: onSubmitDataInterceptor ? onSubmitDataInterceptor(values, sandBoxObject) : values,
+              differencePacket: onSubmitDataInterceptor
+                ? getDifferenceObject(initial, onSubmitDataInterceptor(values, sandBoxObject))
+                : getDifferenceObject(initial, values),
+              initialPacket: initial,
+            },
+            sandBoxObject
+          );
         }
       }
+
       // set submition status
       setFormState(prev => ({ ...prev, submitionError: false }));
-
-      // update to context as well
-      formContextState?.updateFormState({ formName, update: { submitionError: false } });
     } catch (error: any) {
       // set submition status
       setFormState(prev => ({ ...prev, submitionError: true }));
-
-      // update to context as well
-      formContextState?.updateFormState({ formName, update: { submitionError: true } });
       throw new Error(`Error While Submiting Form. ${error}`);
     }
   }
@@ -410,4 +404,4 @@ function useForm({
   };
 }
 
-export { useForm, FormProvider, useFormState, useFormData };
+export { useForm, FormProvider, useFormContextData };

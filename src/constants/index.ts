@@ -24,4 +24,6 @@ export const singleFormInitialState: formContextStateType = {
     isControlFilling: false,
   },
   values: {},
+  errors: {},
+  touchedErrors: {},
 };
