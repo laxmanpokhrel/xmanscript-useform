@@ -22,7 +22,6 @@ export default function useDebouncedValidation({
   validateOnSubmit,
 }: IUseDebouncedValidationProps) {
   return React.useEffect(() => {
-    console.log('inside debounce validation');
     // do not validate if validateOnSubmit is `true`
     if (validateOnSubmit) return;
 

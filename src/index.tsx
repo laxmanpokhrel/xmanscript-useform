@@ -203,10 +203,11 @@ function useForm({
 
           // submit handler will take the packet ready to perform submit action and a difference object between initial values set and packet ready
           await submitHandler({
-            packet: onSubmitDataInterceptor ? onSubmitDataInterceptor(values) : values,
+            currentPacket: onSubmitDataInterceptor ? onSubmitDataInterceptor(values) : values,
             differencePacket: onSubmitDataInterceptor
               ? getDifferenceObject(initial, onSubmitDataInterceptor(values))
               : getDifferenceObject(initial, values),
+            initialPacket: initial,
           });
 
           // set submitting status
@@ -220,10 +221,11 @@ function useForm({
         if (!isAsyncFunction(submitHandler)) {
           if (submitHandler)
             submitHandler({
-              packet: onSubmitDataInterceptor ? onSubmitDataInterceptor(values) : values,
+              currentPacket: onSubmitDataInterceptor ? onSubmitDataInterceptor(values) : values,
               differencePacket: onSubmitDataInterceptor
                 ? getDifferenceObject(initial, onSubmitDataInterceptor(values))
                 : getDifferenceObject(initial, values),
+              initialPacket: initial,
             });
         }
       }
