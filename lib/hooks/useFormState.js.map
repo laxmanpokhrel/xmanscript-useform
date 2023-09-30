@@ -1,1 +1,0 @@
-{"version":3,"file":"useFormState.js","sourceRoot":"","sources":["../../src/hooks/useFormState.tsx"],"names":[],"mappings":";;;;;;;;;;;;;;;;;;;;;;;;;;;;AAAA,6CAA+B;AAC/B,yEAAiD;AAGjD,SAAwB,YAAY,CAAC,QAAgB;IACnD,MAAM,gBAAgB,GAAG,KAAK,CAAC,UAAU,CAAC,qBAAW,CAAC,CAAC;IACvD,oHAAoH;IACpH,OAAO,gBAAgB,aAAhB,gBAAgB,uBAAhB,gBAAgB,CAAE,eAAe,CAAC,QAAQ,EAAE,KAAK,CAAC;AAC3D,CAAC;AAJD,+BAIC"}

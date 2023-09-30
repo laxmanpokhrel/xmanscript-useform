@@ -7,8 +7,8 @@ import { fromContextInitialState, singleFormInitialState } from '../constants';
 const FormProvider = ({ children }: { children: React.ReactNode }) => {
   const [formState, setFormState] = React.useState(fromContextInitialState);
 
-  // function to add form to context
-  function registerFormToContext(formName: string) {
+  // function to initialize form to context
+  function initializeFormToContext(formName: string) {
     setFormState(prev => ({ ...prev, [formName]: singleFormInitialState }));
   }
 
@@ -32,7 +32,7 @@ const FormProvider = ({ children }: { children: React.ReactNode }) => {
   const contextValue: ContextValueType = React.useMemo(() => {
     return {
       formContextData: formState,
-      registerFormToContext,
+      initializeFormToContext,
       updateFormState,
       updateFormData,
     };

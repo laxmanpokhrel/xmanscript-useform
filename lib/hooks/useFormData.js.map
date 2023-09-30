@@ -1,1 +1,0 @@
-{"version":3,"file":"useFormData.js","sourceRoot":"","sources":["../../src/hooks/useFormData.tsx"],"names":[],"mappings":";;;;;;;;;;;;;;;;;;;;;;;;;;;;AAAA,6CAA+B;AAC/B,yEAAiD;AAGjD,SAAwB,WAAW,CAAC,QAAgB;IAClD,MAAM,gBAAgB,GAAG,KAAK,CAAC,UAAU,CAAC,qBAAW,CAAC,CAAC;IACvD,+GAA+G;IAC/G,OAAO,gBAAgB,aAAhB,gBAAgB,uBAAhB,gBAAgB,CAAE,eAAe,CAAC,QAAQ,EAAE,MAAM,CAAC;AAC5D,CAAC;AAJD,8BAIC"}

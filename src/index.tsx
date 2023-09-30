@@ -4,7 +4,14 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import * as React from 'react';
 import { getDifferenceObject, intersectObjects, scrollToComponent } from '@xmanscript/utils';
-import { IUseFormInputProps, RegisterOutputType, RegisterParamProps, UseFormOutputType, formStateType } from './@types';
+import {
+  ISandBoxObject,
+  IUseFormInputProps,
+  RegisterOutputType,
+  RegisterParamProps,
+  UseFormOutputType,
+  formStateType,
+} from './@types';
 import useDebouncedValidation from './hooks/useDebouncedValidation';
 import { getControlId } from './utils/validateValueWithYupSchema';
 import { isAsyncFunction } from './utils/isAsyncFunction';
@@ -28,6 +35,7 @@ function useForm({
   isNestedForm,
   preFillerFn,
   controlFillers,
+  parcel,
 }: IUseFormInputProps): UseFormOutputType {
   const [initial, setInitial] = React.useState(initialValues);
   const [values, setValues] = React.useState<Record<string, any>>(initial);
@@ -37,13 +45,35 @@ function useForm({
   const [controlEnable, setControlEnable] = React.useState<Record<string, boolean>>({});
 
   const [formState, setFormState] = React.useState<formStateType>(defaultFormState);
-  const [controlfilling, setControlfilling] = React.useState<Record<string, boolean>>({});
+  const [controlFilling, setControlFilling] = React.useState<Record<string, boolean>>({});
 
   const formContextState = React.useContext(formContext);
+
+  // function to reset form
+  function resetForm() {
+    setValues(initial);
+    setErrors({});
+    setTouchedErrors({});
+    setTouchedControls({});
+    formContextState?.initializeFormToContext(formName);
+  }
+
   React.useEffect(() => {
     // register form to context
-    formContextState?.registerFormToContext(formName);
+    formContextState?.initializeFormToContext(formName);
   }, []);
+
+  const sandBoxObject: ISandBoxObject = {
+    setBindValues: setValues,
+    setErrors,
+    setTouchedControls,
+    setTouchedErrors,
+    setControlEnable,
+    setFormState,
+    setControlFilling,
+    resetForm,
+    parcel,
+  };
 
   // handle prefilling form and control prefilling
   React.useEffect(() => {
@@ -86,7 +116,7 @@ function useForm({
       Object.entries(controlFillers).map(async ([key, value]) => {
         if (isAsyncFunction(value)) {
           // set control filling to true
-          setControlfilling(prev => ({ ...prev, [key]: true }));
+          setControlFilling(prev => ({ ...prev, [key]: true }));
 
           // set the form state too
           setFormState(prev => ({ ...prev, isControlPreFilling: true }));
@@ -104,7 +134,7 @@ function useForm({
           setInitial(prev => ({ ...prev, [key]: controlFillerValue }));
 
           // set control filling to false
-          setControlfilling(prev => ({ ...prev, [key]: false }));
+          setControlFilling(prev => ({ ...prev, [key]: false }));
 
           // set the form state too
           setFormState(prev => ({ ...prev, isControlFilling: false }));
@@ -126,7 +156,6 @@ function useForm({
     }
   }, []);
 
-  // if (!validateOnSubmit) {
   // validate values using debounced validation
   useDebouncedValidation({
     validationSchema,
@@ -148,7 +177,6 @@ function useForm({
       setTouchedErrors(intersectObjects(touchedControls, errorObject));
     },
   });
-  // }
 
   async function onSubmitHandler(
     e: React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement, MouseEvent>
@@ -202,13 +230,16 @@ function useForm({
           formContextState?.updateFormState({ formName, update: { isSubmitting: true } });
 
           // submit handler will take the packet ready to perform submit action and a difference object between initial values set and packet ready
-          await submitHandler({
-            currentPacket: onSubmitDataInterceptor ? onSubmitDataInterceptor(values) : values,
-            differencePacket: onSubmitDataInterceptor
-              ? getDifferenceObject(initial, onSubmitDataInterceptor(values))
-              : getDifferenceObject(initial, values),
-            initialPacket: initial,
-          });
+          await submitHandler(
+            {
+              currentPacket: onSubmitDataInterceptor ? onSubmitDataInterceptor(values, sandBoxObject) : values,
+              differencePacket: onSubmitDataInterceptor
+                ? getDifferenceObject(initial, onSubmitDataInterceptor(values, sandBoxObject))
+                : getDifferenceObject(initial, values),
+              initialPacket: initial,
+            },
+            sandBoxObject
+          );
 
           // set submitting status
           setFormState(prev => ({ ...prev, isSubmitting: false }));
@@ -220,13 +251,16 @@ function useForm({
         // if submit handler is not asyncronous function then
         if (!isAsyncFunction(submitHandler)) {
           if (submitHandler)
-            submitHandler({
-              currentPacket: onSubmitDataInterceptor ? onSubmitDataInterceptor(values) : values,
-              differencePacket: onSubmitDataInterceptor
-                ? getDifferenceObject(initial, onSubmitDataInterceptor(values))
-                : getDifferenceObject(initial, values),
-              initialPacket: initial,
-            });
+            submitHandler(
+              {
+                currentPacket: onSubmitDataInterceptor ? onSubmitDataInterceptor(values, sandBoxObject) : values,
+                differencePacket: onSubmitDataInterceptor
+                  ? getDifferenceObject(initial, onSubmitDataInterceptor(values, sandBoxObject))
+                  : getDifferenceObject(initial, values),
+                initialPacket: initial,
+              },
+              sandBoxObject
+            );
         }
       }
       // set submition status
@@ -274,27 +308,35 @@ function useForm({
       if (onChangeInterceptor) {
         let interceptedValues: Record<string, any> = {};
         if (isOnChangeEvent) {
-          interceptedValues = onChangeInterceptor({
-            values: {
-              ...values,
-              [controlName]: registerParamProps?.setCustomValue
-                ? registerParamProps.setCustomValue(event.target.value)
-                : event.target.value,
+          interceptedValues = onChangeInterceptor(
+            {
+              values: {
+                ...values,
+                [controlName]: registerParamProps?.setCustomValue
+                  ? registerParamProps.setCustomValue(event.target.value, sandBoxObject)
+                  : event.target.value,
+              },
+              touchedErrors,
+              errors,
+              touchedControls,
             },
-            touchedErrors,
-            errors,
-            touchedControls,
-          });
+            sandBoxObject
+          );
         } else {
-          interceptedValues = onChangeInterceptor({
-            values: {
-              ...values,
-              [controlName]: registerParamProps?.setCustomValue ? registerParamProps.setCustomValue(event) : event,
+          interceptedValues = onChangeInterceptor(
+            {
+              values: {
+                ...values,
+                [controlName]: registerParamProps?.setCustomValue
+                  ? registerParamProps.setCustomValue(event, sandBoxObject)
+                  : event,
+              },
+              touchedErrors,
+              errors,
+              touchedControls,
             },
-            touchedErrors,
-            errors,
-            touchedControls,
-          });
+            sandBoxObject
+          );
         }
         setValues(interceptedValues);
 
@@ -311,7 +353,7 @@ function useForm({
         const valuesToUpdate = {
           ...values,
           [controlName]: registerParamProps?.setCustomValue
-            ? registerParamProps.setCustomValue(event.target.value)
+            ? registerParamProps.setCustomValue(event.target.value, sandBoxObject)
             : event.target.value,
         };
         // update the values
@@ -322,7 +364,9 @@ function useForm({
       } else {
         const valuesToUpdate = {
           ...values,
-          [controlName]: registerParamProps?.setCustomValue ? registerParamProps.setCustomValue(event) : event,
+          [controlName]: registerParamProps?.setCustomValue
+            ? registerParamProps.setCustomValue(event, sandBoxObject)
+            : event,
         };
         // update the values
         setValues(valuesToUpdate);
@@ -350,7 +394,7 @@ function useForm({
       onChangeHandler,
       onChange: onChangeHandler,
       enable: controlEnable[controlName] || true,
-      controlfilling: controlfilling[controlName] || false,
+      controlFilling: controlFilling[controlName] || false,
     };
   }
 
@@ -364,6 +408,7 @@ function useForm({
     register,
     onSubmitHandler,
     setFormState,
+    resetForm,
   };
 }
 
