@@ -123,12 +123,6 @@ export interface IYupError {
   path: string;
 }
 
-export interface IRegisterPropType {
-  setCustomValue?: (e: any) => void;
-  required?: boolean;
-  disableFunc?: (data: Record<string, any>) => boolean;
-}
-
 export interface IUseFormInputProps {
   formName: string;
   initialValues: Record<string, any>;
