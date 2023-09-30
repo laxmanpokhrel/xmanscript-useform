@@ -20,6 +20,7 @@ import FormProvider from './context/FormProvider';
 import formContext from './context/formContext';
 import { defaultFormState } from './constants';
 import useFormState from './hooks/useFormState';
+import useFormData from './hooks/useFormData';
 
 function useForm({
   initialValues,
@@ -73,6 +74,12 @@ function useForm({
     resetForm,
     parcel: parcel || {},
   };
+
+  // update the context when value changes
+  React.useEffect(() => {
+    if (!formContextState) return;
+    formContextState?.updateFormData({ formName, update: values });
+  }, [values]);
 
   // handle prefilling form and control prefilling
   React.useEffect(() => {
@@ -339,8 +346,6 @@ function useForm({
         }
         setValues(interceptedValues);
 
-        // also set the context
-        formContextState?.updateFormData({ formName, update: { interceptedValues } });
         // we do not continue executing after this
         return;
       }
@@ -357,9 +362,6 @@ function useForm({
         };
         // update the values
         setValues(valuesToUpdate);
-
-        // also set the context
-        formContextState?.updateFormData({ formName, update: { valuesToUpdate } });
       } else {
         const valuesToUpdate = {
           ...values,
@@ -369,9 +371,6 @@ function useForm({
         };
         // update the values
         setValues(valuesToUpdate);
-
-        // also set the context
-        formContextState?.updateFormData({ formName, update: { valuesToUpdate } });
       }
 
       // update the touched state if it is `true`
@@ -411,4 +410,4 @@ function useForm({
   };
 }
 
-export { useForm, FormProvider, useFormState };
+export { useForm, FormProvider, useFormState, useFormData };
