@@ -35,7 +35,7 @@ export type RegisterOutputType = {
   onChangeHandler: (e: any) => void; //  will just have to execute this function
   onChange: (e: any) => void; // controls will just have to execute this function
   controlname: string;
-  controlFilling: boolean;
+  controlfilling: boolean;
 };
 
 type SetEnableInputProps = { bindValue: any; bindvalues: any };
@@ -137,5 +137,5 @@ export interface IUseFormInputProps {
   scrollToErrorControl?: boolean;
   preFillerFn?: SyncPrefillerFunction | AsyncPrefillerFunction;
   controlFillers?: Record<string, (() => Promise<any>) | (() => any)>;
-  parcel: any;
+  parcel?: any;
 }

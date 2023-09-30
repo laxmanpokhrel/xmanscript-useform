@@ -43,7 +43,6 @@ function useForm({
   const [touchedErrors, setTouchedErrors] = React.useState<Record<string, any>>({});
   const [touchedControls, setTouchedControls] = React.useState<Record<string, boolean>>({});
   const [controlEnable, setControlEnable] = React.useState<Record<string, boolean>>({});
-
   const [formState, setFormState] = React.useState<formStateType>(defaultFormState);
   const [controlFilling, setControlFilling] = React.useState<Record<string, boolean>>({});
 
@@ -72,7 +71,7 @@ function useForm({
     setFormState,
     setControlFilling,
     resetForm,
-    parcel,
+    parcel: parcel || {},
   };
 
   // handle prefilling form and control prefilling
@@ -394,7 +393,7 @@ function useForm({
       onChangeHandler,
       onChange: onChangeHandler,
       enable: controlEnable[controlName] || true,
-      controlFilling: controlFilling[controlName] || false,
+      controlfilling: controlFilling[controlName] || false,
     };
   }
 
