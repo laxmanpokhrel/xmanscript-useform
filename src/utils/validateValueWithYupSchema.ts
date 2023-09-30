@@ -34,7 +34,7 @@ async function validateValueWithYupSchema(
 }
 
 function getControlId(formName: string, controlName: string) {
-  return `-${formName}-form-field-${controlName}`;
+  return `${formName ? `_${formName}` : ''}_form_field_${controlName}`;
 }
 
 export { validateValueWithYupSchema, getControlId };

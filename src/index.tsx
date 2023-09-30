@@ -126,29 +126,29 @@ function useForm({
     }
   }, []);
 
-  // validate for no validateOnSubmit
-  if (!validateOnSubmit) {
-    // validate values using debounced validation
-    useDebouncedValidation({
-      validationSchema,
-      values,
-      debounceTime: metaData?.DEBOUNCE_TIME ? metaData.DEBOUNCE_TIME : 300,
-      dependencies: [values, touchedControls],
-      callback: (errorObject: Record<string, any>) => {
-        // set errors for every controls
-        setErrors(errorObject);
+  // if (!validateOnSubmit) {
+  // validate values using debounced validation
+  useDebouncedValidation({
+    validationSchema,
+    values,
+    debounceTime: metaData?.DEBOUNCE_TIME ? metaData.DEBOUNCE_TIME : 300,
+    dependencies: [values, touchedControls],
+    validateOnSubmit: !!validateOnSubmit,
+    callback: (errorObject: Record<string, any>) => {
+      // set errors for every controls
+      setErrors(errorObject);
 
-        // set form error state
-        setFormState(prev => ({ ...prev, hasError: !!Object.keys(errorObject).length }));
+      // set form error state
+      setFormState(prev => ({ ...prev, hasError: !!Object.keys(errorObject).length }));
 
-        // update to context as well
-        formContextState?.updateFormState({ formName, update: { hasError: !!Object.keys(errorObject).length } });
+      // update to context as well
+      formContextState?.updateFormState({ formName, update: { hasError: !!Object.keys(errorObject).length } });
 
-        // set error for only touched controls
-        setTouchedErrors(intersectObjects(touchedControls, errorObject));
-      },
-    });
-  }
+      // set error for only touched controls
+      setTouchedErrors(intersectObjects(touchedControls, errorObject));
+    },
+  });
+  // }
 
   async function onSubmitHandler(
     e: React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement, MouseEvent>

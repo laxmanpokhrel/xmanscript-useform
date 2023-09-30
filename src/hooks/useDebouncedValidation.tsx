@@ -10,6 +10,7 @@ interface IUseDebouncedValidationProps {
   validationSchema?: Schema<any> | ((values: Record<string, unknown>) => Record<string, any>);
   values: Record<string, any>;
   debounceTime: number;
+  validateOnSubmit: boolean;
 }
 
 export default function useDebouncedValidation({
@@ -17,20 +18,26 @@ export default function useDebouncedValidation({
   dependencies,
   validationSchema,
   values,
-  debounceTime,
+  debounceTime = 300,
+  validateOnSubmit,
 }: IUseDebouncedValidationProps) {
   return React.useEffect(() => {
+    console.log('inside debounce validation');
+    // do not validate if validateOnSubmit is `true`
+    if (validateOnSubmit) return;
+
     const timerInstance = setTimeout(async () => {
       if (validationSchema) {
         const errorObject: Record<string, any> = await validateFormValues({
           validationSchema,
           values,
         });
+        console.log('🚦 ~ file: useDebouncedValidation.tsx:34 ~ timerInstance ~ errorObject:', errorObject);
 
         // call the callback function
         callback(errorObject);
       }
-    }, debounceTime || 300);
+    }, debounceTime);
 
     // eslint-disable-next-line consistent-return
     return () => clearTimeout(timerInstance);

@@ -1,8 +1,9 @@
 /* eslint-disable no-unused-vars */
 
-import { Schema } from 'yup';
+import { ObjectSchema, Schema } from 'yup';
 
 // ************************************************
+// ***************** types ************************
 // ***************** types ************************
 // ************************************************
 
@@ -105,7 +106,7 @@ interface IMetaDataProps {
 export interface IUseFormInputProps {
   formName: string;
   initialValues: Record<string, any>;
-  validationSchema?: Schema<any> | ((values: Record<string, unknown>) => Record<string, any>);
+  validationSchema?: ObjectSchema<any> | Schema<any> | ((values: Record<string, unknown>) => Record<string, any>);
   onChangeInterceptor?: (props: IOnChangeInterceptorInput) => Record<string, any>;
   onSubmitDataInterceptor?: (data: Record<string, any>) => Record<string, any>;
   isNestedForm?: boolean;
