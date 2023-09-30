@@ -6,6 +6,7 @@ export const defaultFormState: formStateType = {
   isSubmittingForm: false,
   submitionError: false,
   hasError: false,
+  error: null,
 };
 
 // current state of the form

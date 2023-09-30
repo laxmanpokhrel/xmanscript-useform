@@ -7,6 +7,7 @@ export type formStateType = {
   isSubmittingForm: boolean;
   submitionError: boolean;
   hasError: boolean;
+  error: string | null;
 };
 export interface ISandBoxObject {
   setBindValues: React.Dispatch<React.SetStateAction<Record<string, any>>>;

@@ -241,14 +241,14 @@ function useForm({
             sandBoxObject
           );
 
-          // set submitting status
-          setFormState(prev => ({ ...prev, isSubmittingForm: false }));
+          // // set submitting status
+          // setFormState(prev => ({ ...prev, isSubmittingForm: false }));
         }
 
         // if submit handler is not asyncronous function then
         if (!isAsyncFunction(submitHandler)) {
           // set submition status
-          setFormState(prev => ({ ...prev, submitionError: true }));
+          setFormState(prev => ({ ...prev, isSubmittingForm: true }));
 
           submitHandler(
             {
@@ -263,12 +263,15 @@ function useForm({
         }
       }
 
-      // set submition status
-      setFormState(prev => ({ ...prev, submitionError: false }));
+      // // set submition status
+      // setFormState(prev => ({ ...prev, submitionError: false }));
     } catch (error: any) {
       // set submition status
-      setFormState(prev => ({ ...prev, submitionError: true }));
+      setFormState(prev => ({ ...prev, submitionError: true, error }));
       throw new Error(`Error While Submiting Form. ${error}`);
+    } finally {
+      // set submitting status
+      setFormState(prev => ({ ...prev, isSubmittingForm: false }));
     }
   }
 
