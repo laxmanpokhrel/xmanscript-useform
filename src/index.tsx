@@ -98,74 +98,71 @@ function useForm({
     formContextState?.updateFormState({ formName, update: formState });
   }, [formState]);
 
-  // handle prefilling form and control prefilling
   React.useEffect(() => {
     (async () => {
-      if (preFillerFn) {
-        try {
-          let preFillValues: Record<string, any> = {};
+      const hasPreFiller = preFillerFn != null;
+      const hasControlFillers = typeof controlFillers === 'object' && Object.keys(controlFillers).length > 0;
 
-          // set isPreFillingForm state
+      if (hasPreFiller || hasControlFillers) {
+        try {
+          // Begin setting isPreFillingForm state
           setFormState(prev => ({ ...prev, isPreFillingForm: true }));
 
-          if (isAsyncFunction(preFillerFn)) {
-            // get the prefill values
-            preFillValues = await preFillerFn();
+          let preFillValues = {};
+
+          if (hasPreFiller) {
+            if (isAsyncFunction(preFillerFn)) {
+              // get the prefill values asynchronously
+              preFillValues = await preFillerFn();
+            } else {
+              preFillValues = preFillerFn();
+            }
           }
 
-          if (!isAsyncFunction(preFillerFn)) {
-            preFillValues = preFillerFn();
+          if (hasControlFillers) {
+            const controlFillerPromises = Object.entries(controlFillers).map(async ([key, func]) => {
+              if (isAsyncFunction(func)) {
+                // set control filling to true
+                setControlFilling(prev => ({ ...prev, [key]: true }));
+
+                // get values from controlFillerFn asynchronously
+                const controlFillerValue = await func();
+
+                // set the received value
+                setValues(prev => ({ ...prev, [key]: controlFillerValue }));
+
+                // set the initial to find the different object for submit handler
+                setInitial(prev => ({ ...prev, [key]: controlFillerValue }));
+
+                // set control filling to false
+                setControlFilling(prev => ({ ...prev, [key]: false }));
+              } else if (typeof func === 'function' && !isAsyncFunction(func)) {
+                // get values from controlFillerFn synchronously
+                const controlFillerValue = func();
+
+                // set the received value
+                setValues(prev => ({ ...prev, [key]: controlFillerValue }));
+
+                // set the initial to find the different object for submit handler
+                setInitial(prev => ({ ...prev, [key]: controlFillerValue }));
+              }
+            });
+
+            // Wait for all controlFillerPromises to complete
+            await Promise.all(controlFillerPromises);
           }
 
-          // set isPreFillingForm state
-          setFormState(prev => ({ ...prev, isPreFilling: false }));
-
-          // set initialValueCache
+          // Update initial and values
           setInitial(preFillValues);
           setValues(preFillValues);
         } catch (error) {
-          throw new Error(`Error Occured At Prefiller. ${error}`);
+          throw new Error(`Error Occurred. ${error}`);
+        } finally {
+          // Always set isPreFillingForm to false when done
+          setFormState(prev => ({ ...prev, isPreFillingForm: false }));
         }
       }
     })();
-
-    // set the control value if the controlFillers is supplied
-    if (typeof controlFillers === 'object') {
-      // set the form state too
-      setFormState(prev => ({ ...prev, isControlFilling: true }));
-
-      Object.entries(controlFillers).map(async ([key, func]) => {
-        if (isAsyncFunction(func)) {
-          // set control filling to true
-          setControlFilling(prev => ({ ...prev, [key]: true }));
-
-          // get values from controlFillerFn
-          const controlFillerValue = await func();
-
-          // set the received value
-          setValues(prev => ({ ...prev, [key]: controlFillerValue }));
-
-          // set the initial to find the different object for submit handler
-          setInitial(prev => ({ ...prev, [key]: controlFillerValue }));
-
-          // set control filling to false
-          setControlFilling(prev => ({ ...prev, [key]: false }));
-        }
-        if (typeof func === 'function' && !isAsyncFunction(func)) {
-          // get values from controlFillerFn
-          const controlFillerValue = func();
-
-          // set the received value
-          setValues(prev => ({ ...prev, [key]: controlFillerValue }));
-
-          // set the initial to find the different object for submit handler
-          setInitial(prev => ({ ...prev, [key]: controlFillerValue }));
-        }
-      });
-
-      // set the form state too
-      setFormState(prev => ({ ...prev, isControlFilling: false }));
-    }
   }, []);
 
   // validate values using debounced validation
@@ -230,7 +227,7 @@ function useForm({
         // if the `submithandler` function is asyncronous we have to wait for the operation to finish
         if (isAsyncFunction(submitHandler)) {
           // set submitting status
-          setFormState(prev => ({ ...prev, isSubmitting: true }));
+          setFormState(prev => ({ ...prev, isSubmittingForm: true }));
 
           // submit handler will take the packet ready to perform submit action and a difference object between initial values set and packet ready
           await submitHandler(
@@ -245,10 +242,7 @@ function useForm({
           );
 
           // set submitting status
-          setFormState(prev => ({ ...prev, isSubmitting: false }));
-
-          // // update to context as well
-          // formContextState?.updateFormState({ formName, update: { isSubmitting: false } });
+          setFormState(prev => ({ ...prev, isSubmittingForm: false }));
         }
 
         // if submit handler is not asyncronous function then

@@ -4,11 +4,9 @@ import { ObjectSchema, Schema } from 'yup';
 
 export type formStateType = {
   isPreFillingForm: boolean;
-  isSubmitting: boolean;
+  isSubmittingForm: boolean;
   submitionError: boolean;
   hasError: boolean;
-  isValidating: boolean;
-  isControlFilling: boolean;
 };
 export interface ISandBoxObject {
   setBindValues: React.Dispatch<React.SetStateAction<Record<string, any>>>;
