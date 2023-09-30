@@ -31,7 +31,6 @@ export default function useDebouncedValidation({
           validationSchema,
           values,
         });
-        console.log('🚦 ~ file: useDebouncedValidation.tsx:34 ~ timerInstance ~ errorObject:', errorObject);
 
         // call the callback function
         callback(errorObject);
