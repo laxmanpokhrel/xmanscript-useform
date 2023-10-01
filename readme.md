@@ -12,32 +12,29 @@ Another important feature of this hook is its ability to provide a context for t
 # Installation Guide
 Installation guide for **@xmanscript/useform**, a versatile npm package that provides various utilities for your JavaScript projects.
 
-
-
-
 ## Installation
-You can install **@xmanscript/useforms** using one of the following package managers: npm, yarn, or pnpm.
+You can install **@xmanscript/form** using one of the following package managers: npm, yarn, or pnpm.
 
 ### npm
 
-To install **@xmanscript/useforms** using npm, open your terminal and run the following command:
+To install **@xmanscript/useform** using npm, open your terminal and run the following command:
 
 ```shell
-npm install @xmanscript/useforms
+npm install @xmanscript/useform
 ```
 ### yarn
 
-To install **@xmanscript/useforms** using npm, open your terminal and run the following command:
+To install **@xmanscript/useform** using npm, open your terminal and run the following command:
 
 ```shell
-yarn add @xmanscript/useforms
+yarn add @xmanscript/useform
 ```
 ### pnpm
 
-To install **@xmanscript/useforms** using npm, open your terminal and run the following command:
+To install **@xmanscript/useform** using npm, open your terminal and run the following command:
 
 ```shell
-pnpm add @xmanscript/useforms
+pnpm add @xmanscript/useform
 ```
 
 
@@ -67,7 +64,10 @@ pnpm add @xmanscript/useforms
 - **Debounced Validation**: Validation is debounced by default, but you can configure it to run only upon form submission.
 
 - **Interceptors**: Introduces the concept of interceptors to separate data manipulation logic. There are two types: 
-  - **onChangeDateInterceptor**: Customize logic for changing values in the form.
+  - **onChangeInterceptor**: Customize logic for changing values in the form.
   - **onSubmitDataInterceptor**: Manipulate data before it's sent to the server.
 
 With `@xmanscript/useform`, handling forms in your React applications becomes more flexible and efficient.
+
+
+Let's [Get Started 🚀](./docs/GettingStarted.md)

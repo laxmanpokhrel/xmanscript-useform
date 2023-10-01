@@ -334,7 +334,6 @@ function useForm({
         // we do not continue executing after this
         return;
       }
-      // onChangeInterceptor logic ends
 
       // if argument is an event
       if (isOnChangeEvent) {
@@ -383,7 +382,7 @@ function useForm({
 
   return {
     bindValues: values,
-    setBindValues: setValues,
+    // setBindValues: setValues,
     errors,
     setErrors,
     touchedErrors,
