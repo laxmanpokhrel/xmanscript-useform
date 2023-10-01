@@ -240,9 +240,6 @@ function useForm({
             },
             sandBoxObject
           );
-
-          // // set submitting status
-          // setFormState(prev => ({ ...prev, isSubmittingForm: false }));
         }
 
         // if submit handler is not asyncronous function then
@@ -262,9 +259,6 @@ function useForm({
           );
         }
       }
-
-      // // set submition status
-      // setFormState(prev => ({ ...prev, submitionError: false }));
     } catch (error: any) {
       // set submition status
       setFormState(prev => ({ ...prev, submitionError: true, error }));
