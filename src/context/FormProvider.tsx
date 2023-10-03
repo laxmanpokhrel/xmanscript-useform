@@ -1,10 +1,10 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import * as React from 'react';
 import FormContext from './formContext';
-import { ContextValueType, UpdateFormDataProps, UpdateFormStateProps } from '../@types';
+import { ContextValueType, FormProviderPropsType, UpdateFormDataProps, UpdateFormStateProps } from '../@types';
 import { fromContextInitialState, singleFormInitialState } from '../constants';
 
-const FormProvider = ({ children }: { children: React.ReactNode }) => {
+const FormProvider = ({ children, settings }: FormProviderPropsType) => {
   const [formState, setFormState] = React.useState(fromContextInitialState);
 
   // function to initialize form to context
@@ -53,6 +53,7 @@ const FormProvider = ({ children }: { children: React.ReactNode }) => {
       updateFormData,
       updateFormErrors,
       updateFormTouchedErrors,
+      settings,
     };
   }, [formState]);
 

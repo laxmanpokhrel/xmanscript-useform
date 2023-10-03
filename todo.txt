@@ -1,0 +1,4 @@
+[]- handleSubmit can be callable from any other place 
+[]- passin settings from context
+[]- handle context inside a context scenerio
+[]- 

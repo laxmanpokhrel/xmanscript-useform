@@ -24,7 +24,7 @@ import useFormContextData from './hooks/useFormContextData';
 function useForm({
   initialValues,
   validationSchema,
-  metaData,
+  settings,
   validateOnSubmit,
   touchOnChange,
   formName,
@@ -165,11 +165,14 @@ function useForm({
     })();
   }, []);
 
+  // get the debounce time foo debounce validateion
+  const debounceTIme = settings?.DEBOUNCE_TIME || formContextState?.settings.DEBOUNCE_TIME || 300;
+
   // validate values using debounced validation
   useDebouncedValidation({
     validationSchema,
     values,
-    debounceTime: metaData?.DEBOUNCE_TIME ? metaData.DEBOUNCE_TIME : 300,
+    debounceTime: debounceTIme,
     dependencies: [values, touchedControls],
     validateOnSubmit: !!validateOnSubmit,
     callback: (errorObject: Record<string, any>) => {
@@ -185,9 +188,10 @@ function useForm({
   });
 
   async function onSubmitHandler(
-    e: React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement, MouseEvent>
+    e?: React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) {
-    e.preventDefault();
+    // if (e is React.FormEvent<HTMLFormElement> || e instanceof React.MouseEvent<HTMLButtonElement, MouseEvent>)
+    if (e) e.preventDefault();
     if (isNestedForm) return;
     try {
       // validate values before submitting
@@ -216,6 +220,7 @@ function useForm({
           scrollToComponent({
             componentId: getControlId(formName, errorObject[Object.keys(errorObject)[0]]),
             focusAfterScroll: true,
+            // scrollDelay: settings?.SCROLL_DELAY || formContextState?.settings.SCROLL_DELAY || 0,
           });
         }
 

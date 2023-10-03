@@ -4,8 +4,8 @@
 ```ts
 import { useForm } from '@xmanscript/useform';
 ```
-* Get the register method out of it and start registering the form controls th the hook:
-##### Learn about the props that `useForm`  [here](./useFrom.md)
+* Get the register method out of it and start registering the form controls t0] the hook:
+##### Learn about `useForm`  [here](./useFrom.md)
 
 ## 2. Register Form Controls
 ```ts
@@ -26,6 +26,7 @@ import { useForm } from '@xmanscript/useform';
     {...register('control_three')}
 />
 ```
+
 On doing so `YourCustomFormControl` is now bind with `useForm` hook.
 ### 
 Note that, `YourCustomFormControl` should be `@xmanscript/useform` friendly component. For `@xmanscript/useform` friendly component design refer [here](./ComponentDesignGuide.md).

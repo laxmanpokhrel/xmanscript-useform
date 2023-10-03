@@ -72,6 +72,11 @@ export type UpdateFormDataProps = { formName: string; update: Record<string, any
 export type UpdateFormErrorsProps = { formName: string; update: Record<string, any> };
 export type UpdateFormTouchedErrorsProps = { formName: string; update: Record<string, any> };
 
+export type SettingsType = {
+  DEBOUNCE_TIME: number;
+  SCROLL_DELAY: number;
+};
+
 export type ContextValueType = {
   formContextData: Record<string, formContextStateType>;
   initializeFormToContext: (formName: string) => void;
@@ -79,6 +84,7 @@ export type ContextValueType = {
   updateFormData: ({ formName, update }: UpdateFormDataProps) => void;
   updateFormErrors: ({ formName, update }: UpdateFormErrorsProps) => void;
   updateFormTouchedErrors: ({ formName, update }: UpdateFormTouchedErrorsProps) => void;
+  settings: SettingsType;
 };
 
 export type useFormDataOutput = Record<string, any>;
@@ -96,6 +102,8 @@ export type AsyncSubmitHandlerFunction = (
 ) => Promise<void>;
 export type SyncPrefillerFunction = () => Record<string, any>;
 export type AsyncPrefillerFunction = () => Promise<Record<string, any>>;
+
+export type FormProviderPropsType = { children: React.ReactNode; settings: SettingsType };
 
 // ****************************************************
 // ***************** interface ************************
@@ -119,10 +127,6 @@ export interface IOnChangeInterceptorInput {
   touchedErrors: Record<string, any>;
 }
 
-interface IMetaDataProps {
-  DEBOUNCE_TIME: number;
-}
-
 export interface IYupError {
   message: string;
   path: string;
@@ -136,7 +140,7 @@ export interface IUseFormInputProps {
   onSubmitDataInterceptor?: (data: Record<string, any>, sandBoxObject: ISandBoxObject) => Record<string, any>;
   isNestedForm?: boolean;
   validateOnSubmit?: boolean;
-  metaData?: IMetaDataProps;
+  settings?: SettingsType;
   touchOnChange?: boolean;
   submitHandler?: SyncSubmitHandlerFunction | AsyncSubmitHandlerFunction;
   scrollToErrorControl?: boolean;

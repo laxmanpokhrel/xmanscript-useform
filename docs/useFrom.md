@@ -44,7 +44,7 @@ The `useForm` function accepts the following attributes as input:
 11. `parcel`:
     - **Description**: This attribute allows you to pass an object into every function that's passed into `useForm`.
 
-12. `metaData`:
+12. `settings`:
     - **Description**: This object accepts a `DEBOUNCE_TIME` setting, which determines the debounce time for device validation. The default value is 300 milliseconds.
 
 The `useForm` function also provides the following output attributes:
