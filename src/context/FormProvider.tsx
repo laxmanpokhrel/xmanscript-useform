@@ -20,7 +20,7 @@ const FormProvider = ({ children, settings }: FormProviderPropsType) => {
     }));
   }
 
-  // function to handle update of the form states
+  // function to handle update of the form errors
   function updateFormErrors({ formName, update }: UpdateFormStateProps) {
     setFormState(prev => ({
       ...prev,
@@ -28,7 +28,7 @@ const FormProvider = ({ children, settings }: FormProviderPropsType) => {
     }));
   }
 
-  // function to handle update of the form states
+  // function to handle update of the form touchedErrors
   function updateFormTouchedErrors({ formName, update }: UpdateFormStateProps) {
     setFormState(prev => ({
       ...prev,

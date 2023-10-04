@@ -367,7 +367,7 @@ function useForm({
         onTouchHandler();
       }
     }
-    // expect event listeners other attributes should be in small case because they will be passed to our components as probs
+    // except event listeners other attributes should be in small case because they will be passed to our components as probs
     return {
       id: getControlId(formName || '', controlName),
       controlname: controlName,
