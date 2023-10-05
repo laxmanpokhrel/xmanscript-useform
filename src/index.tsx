@@ -165,7 +165,7 @@ function useForm({
     })();
   }, []);
 
-  // get the debounce time foo debounce validateion
+  // get the debounce time for debounce validateion
   const debounceTIme = settings?.DEBOUNCE_TIME || formContextState?.settings.DEBOUNCE_TIME || 300;
 
   // validate values using debounced validation

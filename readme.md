@@ -43,7 +43,7 @@ pnpm add @xmanscript/useform
 
 ## Key Features
 
-- **Custom Form Controls**: You can seamlessly integrate any custom React component as a form control. (For guidelines on designing such components, refer to the `@xmanscript/useform` friendly component design guide.)
+- **Custom Form Controls**: You can seamlessly integrate any custom React component as a form control. (For guidelines on designing such components, refer to the `@xmanscript/useform` friendly [component design guide](./docs//ComponentDesignGuide.md).)
 
 - **Contextual Form Data**: The hook's provider offers a context that holds form values, errors, and status, streamlining multi-step form handling.
 
