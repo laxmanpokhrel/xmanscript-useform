@@ -21,7 +21,7 @@ export interface ISandBoxObject {
   parcel: any;
 }
 
-export type RegisterOutputType = {
+export interface RegisterOutputType {
   id: string;
   touchederror: any;
   error: any;
@@ -35,14 +35,13 @@ export type RegisterOutputType = {
   onChange: (e: any) => void; // controls will just have to execute this function
   controlname: string;
   controlfilling: boolean;
-};
+}
 
 type SetEnableInputProps = { bindValue: any; bindvalues: any };
 
 export type RegisterParamProps = {
   setCustomValue?: (value: any, sandBoxObject: ISandBoxObject) => any;
   setEnable?: ((props: SetEnableInputProps) => boolean) | boolean;
-  controlFillerFn?: (() => Promise<any>) | (() => any);
 };
 
 export type formContextStateType = {

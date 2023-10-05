@@ -4,7 +4,7 @@
 ```ts
 import { useForm } from '@xmanscript/useform';
 ```
-* Get the register method out of it and start registering the form controls t0] the hook:
+* Get the register method out of it and start registering the form controls t0 the hook:
 ##### Learn about `useForm`  [here](./useFrom.md)
 
 ## 2. Register Form Controls

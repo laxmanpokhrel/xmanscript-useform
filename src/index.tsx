@@ -165,7 +165,7 @@ function useForm({
     })();
   }, []);
 
-  // get the debounce time foo debounce validateion
+  // get the debounce time for debounce validateion
   const debounceTIme = settings?.DEBOUNCE_TIME || formContextState?.settings.DEBOUNCE_TIME || 300;
 
   // validate values using debounced validation
@@ -367,7 +367,7 @@ function useForm({
         onTouchHandler();
       }
     }
-    // expect event listeners other attributes should be in small case because they will be passed to our components as probs
+    // except event listeners other attributes should be in small case because they will be passed to our components as probs
     return {
       id: getControlId(formName || '', controlName),
       controlname: controlName,
