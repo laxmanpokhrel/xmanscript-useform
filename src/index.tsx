@@ -292,7 +292,7 @@ function useForm({
             ? typeof registerParamProps.setEnable === 'function'
               ? registerParamProps.setEnable({
                   bindValue: isOnChangeEvent ? event.target.value : event,
-                  values: values,
+                  values,
                 })
               : typeof registerParamProps.setEnable === 'boolean'
               ? registerParamProps.setEnable
@@ -376,10 +376,8 @@ function useForm({
       haserror: !!errors[controlName],
       touched: !!touchedControls[controlName],
       value: values[controlName],
-      value: values[controlName],
       onTouchHandler,
       onChange,
-      onChange: onChange,
       enable: controlEnable[controlName] || true,
       controlfilling: controlFilling[controlName] || false,
     };
