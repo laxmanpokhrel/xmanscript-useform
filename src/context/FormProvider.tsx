@@ -1,7 +1,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import * as React from 'react';
 import FormContext from './formContext';
-import { ContextValueType, FormProviderPropsType, UpdateFormDataProps, UpdateFormStateProps } from '../@types';
+import {
+  ContextValueType,
+  FormProviderPropsType,
+  UpdateFormDataProps,
+  UpdateFormSandBoxObjectProps,
+  UpdateFormStateProps,
+} from '../@types';
 import { fromContextInitialState, singleFormInitialState } from '../constants';
 
 const FormProvider = (formProviderProps?: FormProviderPropsType) => {
@@ -37,10 +43,18 @@ const FormProvider = (formProviderProps?: FormProviderPropsType) => {
   }
 
   // function to handle update of the form values
-  function updateFormData({ formName, update }: UpdateFormDataProps) {
+  function updateFormValues({ formName, update }: UpdateFormDataProps) {
     setFormState(prev => ({
       ...prev,
       [formName]: { ...prev[formName], values: { ...prev[formName].values, ...update } },
+    }));
+  }
+
+  // function to handle update of the form values
+  function updateFormSandBoxObject({ formName, sandBoxObject }: UpdateFormSandBoxObjectProps) {
+    setFormState(prev => ({
+      ...prev,
+      [formName]: { ...prev[formName], sandBoxObject },
     }));
   }
 
@@ -50,10 +64,14 @@ const FormProvider = (formProviderProps?: FormProviderPropsType) => {
       formContextData: formState,
       initializeFormToContext,
       updateFormState,
-      updateFormData,
+      updateFormValues,
       updateFormErrors,
       updateFormTouchedErrors,
-      settings: formProviderProps ? formProviderProps.settings : { DEBOUNCE_TIME: 300, SCROLL_DELAY: 0 },
+      updateFormSandBoxObject,
+      settings:
+        formProviderProps && formProviderProps?.settings
+          ? formProviderProps.settings
+          : { DEBOUNCE_TIME: 300, SCROLL_DELAY: 0, parcel: null },
     };
   }, [formState]);
 

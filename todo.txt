@@ -1,4 +1,6 @@
-[]- handleSubmit can be callable from any other place 
-[]- passin settings from context
-[]- handle context inside a context scenerio
+[x]- handleSubmit can be callable from any other place 
+[x]- passin settings from context
+[x]- handle context inside a context scenerio
 []- paralle fetching of controlfillers
+[x]- provide sandBoxObject in context
+[]- add config to add values from context when form mounts, but if the prefiller function is provided it will prefill from the prefiller function not from the cotext

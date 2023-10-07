@@ -18,7 +18,7 @@ export interface ISandBoxObject {
   setFormState: React.Dispatch<React.SetStateAction<formStateType>>;
   setControlFilling: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
   resetForm: () => void;
-  parcel: any;
+  parcel: any | null;
 }
 
 export interface RegisterOutputType {
@@ -49,6 +49,7 @@ export type formContextStateType = {
   values: Record<string, any>;
   errors: Record<string, any>;
   touchedErrors: Record<string, any>;
+  sandBoxObject?: ISandBoxObject;
 };
 
 export type UseFormOutputType = {
@@ -70,23 +71,26 @@ export type UpdateFormStateProps = { formName: string; update: Partial<formState
 export type UpdateFormDataProps = { formName: string; update: Record<string, any> };
 export type UpdateFormErrorsProps = { formName: string; update: Record<string, any> };
 export type UpdateFormTouchedErrorsProps = { formName: string; update: Record<string, any> };
+export type UpdateFormSandBoxObjectProps = { formName: string; sandBoxObject: ISandBoxObject };
 
 export type SettingsType = {
-  DEBOUNCE_TIME: number;
-  SCROLL_DELAY: number;
+  DEBOUNCE_TIME?: number;
+  SCROLL_DELAY?: number;
+  parcel?: any | null;
 };
 
 export type ContextValueType = {
   formContextData: Record<string, formContextStateType>;
   initializeFormToContext: (formName: string) => void;
   updateFormState: ({ formName, update }: UpdateFormStateProps) => void;
-  updateFormData: ({ formName, update }: UpdateFormDataProps) => void;
+  updateFormValues: ({ formName, update }: UpdateFormDataProps) => void;
   updateFormErrors: ({ formName, update }: UpdateFormErrorsProps) => void;
   updateFormTouchedErrors: ({ formName, update }: UpdateFormTouchedErrorsProps) => void;
+  updateFormSandBoxObject: ({ formName, sandBoxObject }: UpdateFormSandBoxObjectProps) => void;
   settings: SettingsType;
 };
 
-export type useFormDataOutput = Record<string, any>;
+export type useFormContextDataOutput = Record<string, any>;
 
 export type SubmitHandlerInputProps = {
   currentPacket: Record<string, any>;
@@ -102,7 +106,7 @@ export type AsyncSubmitHandlerFunction = (
 export type SyncPrefillerFunction = () => Record<string, any>;
 export type AsyncPrefillerFunction = () => Promise<Record<string, any>>;
 
-export type FormProviderPropsType = { children?: React.ReactNode; settings?: Partial<SettingsType> };
+export type FormProviderPropsType = { children?: React.ReactNode; settings?: SettingsType };
 
 // ****************************************************
 // ***************** interface ************************
@@ -145,5 +149,5 @@ export interface IUseFormInputProps {
   scrollToErrorControl?: boolean;
   preFillerFn?: SyncPrefillerFunction | AsyncPrefillerFunction;
   controlFillers?: Record<string, (() => Promise<any>) | (() => any)>;
-  parcel?: any;
+  parcel?: any | null;
 }

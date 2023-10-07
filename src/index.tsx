@@ -57,11 +57,6 @@ function useForm({
     formContextState?.initializeFormToContext(formName);
   }
 
-  React.useEffect(() => {
-    // register form to context
-    formContextState?.initializeFormToContext(formName);
-  }, []);
-
   const sandBoxObject: ISandBoxObject = {
     setBindValues: setValues,
     setErrors,
@@ -71,8 +66,13 @@ function useForm({
     setFormState,
     setControlFilling,
     resetForm,
-    parcel: parcel || {},
+    parcel: parcel || null,
   };
+  React.useEffect(() => {
+    // register form to context
+    formContextState?.initializeFormToContext(formName);
+    formContextState?.updateFormSandBoxObject({ formName, sandBoxObject });
+  }, []);
 
   // update the errors of the context when errors change
   React.useEffect(() => {
@@ -89,7 +89,7 @@ function useForm({
   // update the values of the context when values change
   React.useEffect(() => {
     if (!formContextState) return;
-    formContextState?.updateFormData({ formName, update: values });
+    formContextState?.updateFormValues({ formName, update: values });
   }, [values]);
 
   // update the state of the  context when state changes
