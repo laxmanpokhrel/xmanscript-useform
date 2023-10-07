@@ -65,20 +65,14 @@ While designing a custom form control that is `@xmanscript/useform` friendly, yo
 - `enable` (type: `boolean`):
   - A boolean value indicating whether the element is enabled. By default, it is `true`. Control enabling or disabling logic can be implemented using the `setEnable` method.
 
-- `bindvalue` (type: `any`):
-  - The value of the control used for two-way binding.
-
 - `value` (type: `any`):
-  - Same as `bindValue`, provided with a different name to avoid naming conflicts.
+  - The value of the control used for two-way binding.
 
 - `onTouchHandler` (type: `() => void`):
   - A function that should be executed when the element is touched. If `touchOnChange: true` is passed while setting up `useForm`, there's no need to execute this method, as the element will be considered touched when its value changes.
 
-- `onChangeHandler` (type: `(e: any) => void`):
-  - A function that should be executed when a change event occurs.
-
 - `onChange` (type: `(e: any) => void`):
-  - Same as `onChangeHandler`.
+  - A function that should be executed when a change event occurs.
 
 - `controlname` (type: `string`):
   - Represents the name of the control.
@@ -86,4 +80,4 @@ While designing a custom form control that is `@xmanscript/useform` friendly, yo
 - `controlfilling` (type: `boolean`):
   - A boolean value indicating whether the control is filling.
 
-Developers using TypeScript will need to extend or type the props received by their custom form control with `RegisterOutputType` provided from `@types` of the hook.
+Developers using TypeScript will need to extend or type the props received by their custom form control with `IRegisterOutputProps` provided from `@types` of the hook.

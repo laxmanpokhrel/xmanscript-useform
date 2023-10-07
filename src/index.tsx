@@ -7,7 +7,7 @@ import { getDifferenceObject, intersectObjects, scrollToComponent } from '@xmans
 import {
   ISandBoxObject,
   IUseFormInputProps,
-  RegisterOutputType,
+  IRegisterOutputProps,
   RegisterParamProps,
   UseFormOutputType,
   formStateType,
@@ -274,14 +274,14 @@ function useForm({
     }
   }
 
-  function register(controlName: string, registerParamProps?: RegisterParamProps): RegisterOutputType {
+  function register(controlName: string, registerParamProps?: RegisterParamProps): IRegisterOutputProps {
     // function to handle touched state
     function onTouchHandler() {
       setTouchedControls(prev => ({ ...prev, [controlName]: true }));
     }
 
     // to handle value change
-    function onChangeHandler(event: any) {
+    function onChange(event: any) {
       const isOnChangeEvent = event instanceof Event || !!event.target;
 
       // there is `setEnable` function or value
@@ -292,7 +292,7 @@ function useForm({
             ? typeof registerParamProps.setEnable === 'function'
               ? registerParamProps.setEnable({
                   bindValue: isOnChangeEvent ? event.target.value : event,
-                  bindvalues: values,
+                  values: values,
                 })
               : typeof registerParamProps.setEnable === 'boolean'
               ? registerParamProps.setEnable
@@ -375,11 +375,11 @@ function useForm({
       error: errors[controlName] || null,
       haserror: !!errors[controlName],
       touched: !!touchedControls[controlName],
-      bindvalue: values[controlName],
+      value: values[controlName],
       value: values[controlName],
       onTouchHandler,
-      onChangeHandler,
-      onChange: onChangeHandler,
+      onChange,
+      onChange: onChange,
       enable: controlEnable[controlName] || true,
       controlfilling: controlFilling[controlName] || false,
     };

@@ -21,23 +21,21 @@ export interface ISandBoxObject {
   parcel: any | null;
 }
 
-export interface RegisterOutputType {
+export interface IRegisterOutputProps {
   id: string;
   touchederror: any;
   error: any;
   haserror: boolean;
   touched: boolean;
   enable: boolean;
-  bindvalue: any;
   value: any;
   onTouchHandler: () => void; // will just have to execute this function
-  onChangeHandler: (e: any) => void; //  will just have to execute this function
-  onChange: (e: any) => void; // controls will just have to execute this function
+  onChange: (e: any) => void;
   controlname: string;
   controlfilling: boolean;
 }
 
-type SetEnableInputProps = { bindValue: any; bindvalues: any };
+type SetEnableInputProps = { bindValue: any; values: any };
 
 export type RegisterParamProps = {
   setCustomValue?: (value: any, sandBoxObject: ISandBoxObject) => any;
@@ -59,7 +57,7 @@ export type UseFormOutputType = {
   touchedErrors: Record<string, any>;
   setErrors: React.Dispatch<React.SetStateAction<Record<string, any>>>;
   formState: formStateType;
-  register: (controlName: string, registerParamProps?: RegisterParamProps) => RegisterOutputType;
+  register: (controlName: string, registerParamProps?: RegisterParamProps) => IRegisterOutputProps;
   onSubmitHandler: (
     e: React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => Promise<void>;
@@ -113,7 +111,7 @@ export type FormProviderPropsType = { children?: React.ReactNode; settings?: Set
 // ****************************************************
 export interface IRegisterProps
   extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange' | 'onFocus' | 'onAbort'> {
-  bindvalue: any;
+  value: any;
   onFocus: (e?: any) => void;
   onChange: (e: any) => void;
   touched: boolean;
