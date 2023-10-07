@@ -102,7 +102,7 @@ export type AsyncSubmitHandlerFunction = (
 export type SyncPrefillerFunction = () => Record<string, any>;
 export type AsyncPrefillerFunction = () => Promise<Record<string, any>>;
 
-export type FormProviderPropsType = { children: React.ReactNode; settings: SettingsType };
+export type FormProviderPropsType = { children?: React.ReactNode; settings?: Partial<SettingsType> };
 
 // ****************************************************
 // ***************** interface ************************

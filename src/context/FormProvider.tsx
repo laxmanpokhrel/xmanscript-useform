@@ -4,7 +4,7 @@ import FormContext from './formContext';
 import { ContextValueType, FormProviderPropsType, UpdateFormDataProps, UpdateFormStateProps } from '../@types';
 import { fromContextInitialState, singleFormInitialState } from '../constants';
 
-const FormProvider = ({ children, settings }: FormProviderPropsType) => {
+const FormProvider = (formProviderProps?: FormProviderPropsType) => {
   const [formState, setFormState] = React.useState(fromContextInitialState);
 
   // function to initialize form to context
@@ -53,11 +53,15 @@ const FormProvider = ({ children, settings }: FormProviderPropsType) => {
       updateFormData,
       updateFormErrors,
       updateFormTouchedErrors,
-      settings,
+      settings: formProviderProps ? formProviderProps.settings : { DEBOUNCE_TIME: 300, SCROLL_DELAY: 0 },
     };
   }, [formState]);
 
-  return <FormContext.Provider value={contextValue}>{children}</FormContext.Provider>;
+  return (
+    <FormContext.Provider value={contextValue}>
+      {formProviderProps ? formProviderProps.children : null}
+    </FormContext.Provider>
+  );
 };
 
 export default FormProvider;

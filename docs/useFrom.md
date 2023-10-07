@@ -26,6 +26,8 @@ import { useForm } from "@xmanscript/useform";
    const userDetailFormData = useFormContextData('user_detail_form');
    ```
 
+##### Learn more about using form context [here](./usingContext.md)
+
 2. `initialValues` (*required*):
    - **Description**: This attribute is also required and represents an object that initializes the form controls.
    - **Usage**: If provided empty object, it will result in a 'controlled input to be uncontrolled' warning. It is recommended to provide initial value for each of the controls of the form.
@@ -99,7 +101,7 @@ const { register } = useForm({
 * just like `submitHandler` received the `sandBoxObject` other functions like `onSubmitDataInterceptor`, `setCustomValue` in `register` and `onChangeInterceptor` also receive `sandBoxObject` as second parameter.
 
 
-Learn more about `sandBoxObject` [here](./sandBoxObject.md).
+##### Learn more about `sandBoxObject` [here](./sandBoxObject.md).
 
 5. `onChangeInterceptor`:
    - **Description**: This function allows you to add custom logic for value changes in the form.
@@ -149,7 +151,7 @@ const { register } = useForm({
 
 Well, we can fetch externally and fill it in. But if we passed it in `controlFillers` it will be easy to handle state of the form. We can track if the form is prefilling the controls by loking into `formState`, which has `isPrefillingForm` attrubute. 
 
-Learn more about `formState` [here](./formstate.md).
+##### Learn more about `formState` [here](./formstate.md).
 
 7. `validateOnSubmit`:
    - **Description**: This attribute, by default, is set to `false`.
@@ -223,6 +225,6 @@ The `useForm` function also provides the following output attributes:
   - *Description*: A function used to hook the controls to the form.
 
 - **`onSubmitHandler`**:
-  - *Description*: Listens to the submit action of the form.
+  - *Description*: Listens to the submit action of the form. It can also be called directly without passing any arguments.
 
 These attributes and options provide flexibility and control over form initialization, validation, and handling within your application.
