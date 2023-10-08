@@ -10,7 +10,7 @@ export type formStateType = {
   error: string | null;
 };
 export interface ISandBoxObject {
-  setBindValues: React.Dispatch<React.SetStateAction<Record<string, any>>>;
+  setValues: React.Dispatch<React.SetStateAction<Record<string, any>>>;
   setErrors: React.Dispatch<React.SetStateAction<Record<string, any>>>;
   setTouchedErrors: React.Dispatch<React.SetStateAction<Record<string, any>>>;
   setTouchedControls: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
@@ -52,7 +52,7 @@ export type formContextStateType = {
 
 export type UseFormOutputType = {
   bindValues: Record<string, any>;
-  // setBindValues: React.Dispatch<React.SetStateAction<Record<string, any>>>;
+  setValues: React.Dispatch<React.SetStateAction<Record<string, any>>>;
   errors: Record<string, any>;
   touchedErrors: Record<string, any>;
   setErrors: React.Dispatch<React.SetStateAction<Record<string, any>>>;

@@ -80,11 +80,14 @@ By extending `IRegisterOutputProps` and combining them with your custom props, y
         }
     }}
  />
-
 ```
 In this example, `value` and the custom `onChangeCapture` function are the two essential aspects you need to integrate with your custom `CommandInput` component.
 
-You can also utilize other props like `hasError`, `error`, `disabled`, etc to make it more `useForm` friendly component. Learn more about them [here](./register.md)
+You can also take advantage of other props like `hasError`, `error`, `disabled`, `touchedError`, and `touched` to make your component more user-friendly when using `useForm`. You can learn more about these props [here](./register.md).
+
+Here are some useful tips:
+ 1. If you've set `touchOnChange` to `true` when declaring `useForm`, you don't need to trigger `onTouchHandler`. When it's set to true, `useForm` will consider the control as touched as soon as its value changes.
+ 2. Instead of using `error` to display an `error` message when the component changes, use `touchedError`. `error` will contain an   message or any error value whenever any component changes its value.
 
 This approach allows you to create `CustomFormControl` components tailored to your specific requirements, whether they involve native HTML elements or custom components.
 

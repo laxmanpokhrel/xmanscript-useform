@@ -58,7 +58,7 @@ function useForm({
   }
 
   const sandBoxObject: ISandBoxObject = {
-    setBindValues: setValues,
+    setValues,
     setErrors,
     setTouchedControls,
     setTouchedErrors,
@@ -167,13 +167,11 @@ function useForm({
 
   // get the debounce time for debounce validateion
   const debounceTIme = settings?.DEBOUNCE_TIME || formContextState?.settings.DEBOUNCE_TIME || 300;
-
   // validate values using debounced validation
   useDebouncedValidation({
     validationSchema,
     values,
     debounceTime: debounceTIme,
-    dependencies: [values, touchedControls],
     validateOnSubmit: !!validateOnSubmit,
     callback: (errorObject: Record<string, any>) => {
       // set errors for every controls
@@ -185,6 +183,7 @@ function useForm({
       // set error for only touched controls
       setTouchedErrors(intersectObjects(touchedControls, errorObject));
     },
+    dependencies: [values, touchedControls],
   });
 
   async function onSubmitHandler(
@@ -367,6 +366,7 @@ function useForm({
         onTouchHandler();
       }
     }
+
     // except event listeners other attributes should be in small case because they will be passed to our components as probs
     return {
       id: getControlId(formName || '', controlName),
@@ -385,7 +385,7 @@ function useForm({
 
   return {
     bindValues: values,
-    // setBindValues: setValues,
+    setValues,
     errors,
     setErrors,
     touchedErrors,
