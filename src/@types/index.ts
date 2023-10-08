@@ -51,7 +51,7 @@ export type formContextStateType = {
 };
 
 export type UseFormOutputType = {
-  bindValues: Record<string, any>;
+  values: Record<string, any>;
   setValues: React.Dispatch<React.SetStateAction<Record<string, any>>>;
   errors: Record<string, any>;
   touchedErrors: Record<string, any>;

@@ -36,6 +36,7 @@ function useForm({
   preFillerFn,
   controlFillers,
   parcel,
+  persistValues,
 }: IUseFormInputProps): UseFormOutputType {
   const [initial, setInitial] = React.useState(initialValues);
   const [values, setValues] = React.useState<Record<string, any>>(initial);
@@ -50,7 +51,7 @@ function useForm({
 
   // function to reset form
   function resetForm() {
-    setValues(initial);
+    setValues(() => ({}));
     setErrors({});
     setTouchedErrors({});
     setTouchedControls({});
@@ -70,6 +71,11 @@ function useForm({
   };
   React.useEffect(() => {
     // register form to context
+    if (persistValues && formContextState) {
+      // get the form values from the context
+      const valuesFromContext = formContextState.formContextData[formName]?.values || {};
+      setValues(valuesFromContext);
+    }
     formContextState?.initializeFormToContext(formName);
     formContextState?.setFormSandBoxObject({ formName, sandBoxObject });
   }, []);
@@ -282,7 +288,6 @@ function useForm({
     // to handle value change
     function onChange(event: any) {
       const isOnChangeEvent = event instanceof Event || !!event.target;
-
       // there is `setEnable` function or value
       if (registerParamProps && registerParamProps?.setEnable) {
         setControlEnable(prev => ({
@@ -384,7 +389,7 @@ function useForm({
   }
 
   return {
-    bindValues: values,
+    values,
     setValues,
     errors,
     setErrors,

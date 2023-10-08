@@ -206,9 +206,8 @@ By default form is validated when the value changes and before submiting form. W
 
 The `useForm` function also provides the following output attributes:
 
-- **`bindValues`**:
-  - *Description*: Holds the current values of the form. This prop would have been named `values` but `values` being commonly used `bindValues` would be much better to avoid naming clash.
-
+- **`values`**:
+  - *Description*: Holds the current values of the form.
 - **`errors`**:
   - *Description*: Contains the current errors of the form.
 
@@ -226,5 +225,9 @@ The `useForm` function also provides the following output attributes:
 
 - **`onSubmitHandler`**:
   - *Description*: Listens to the submit action of the form. It can also be called directly without passing any arguments.
+
+- **`resetForm`**: 
+  - *Description*: Resets form.
+
 
 These attributes and options provide flexibility and control over form initialization, validation, and handling within your application.

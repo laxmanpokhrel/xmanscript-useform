@@ -3,4 +3,5 @@
 [x]- handle context inside a context scenerio
 [x]- paralle fetching of controlfillers
 [x]- provide sandBoxObject in context
-[]- add config to add values from context when form mounts, but if the prefiller function is provided it will prefill from the prefiller function not from the cotext
+[]- add config to add values from context when form mounts. rest of the logic is same but when component mounts we have to check if the config in true, if true then we shuld initialize the values to the that value.
+[]- 
