@@ -71,7 +71,7 @@ function useForm({
   React.useEffect(() => {
     // register form to context
     formContextState?.initializeFormToContext(formName);
-    formContextState?.updateFormSandBoxObject({ formName, sandBoxObject });
+    formContextState?.setFormSandBoxObject({ formName, sandBoxObject });
   }, []);
 
   // update the errors of the context when errors change

@@ -84,7 +84,7 @@ export type ContextValueType = {
   updateFormValues: ({ formName, update }: UpdateFormDataProps) => void;
   updateFormErrors: ({ formName, update }: UpdateFormErrorsProps) => void;
   updateFormTouchedErrors: ({ formName, update }: UpdateFormTouchedErrorsProps) => void;
-  updateFormSandBoxObject: ({ formName, sandBoxObject }: UpdateFormSandBoxObjectProps) => void;
+  setFormSandBoxObject: ({ formName, sandBoxObject }: UpdateFormSandBoxObjectProps) => void;
   settings: SettingsType;
 };
 
@@ -106,9 +106,6 @@ export type AsyncPrefillerFunction = () => Promise<Record<string, any>>;
 
 export type FormProviderPropsType = { children?: React.ReactNode; settings?: SettingsType };
 
-// ****************************************************
-// ***************** interface ************************
-// ****************************************************
 export interface IRegisterProps
   extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange' | 'onFocus' | 'onAbort'> {
   value: any;
@@ -148,4 +145,5 @@ export interface IUseFormInputProps {
   preFillerFn?: SyncPrefillerFunction | AsyncPrefillerFunction;
   controlFillers?: Record<string, (() => Promise<any>) | (() => any)>;
   parcel?: any | null;
+  persistValues?: boolean;
 }

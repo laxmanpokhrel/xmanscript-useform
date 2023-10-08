@@ -17,7 +17,6 @@ The `FormProvider` can accept several settings that will apply to the forms usin
 
 * `DEBOUNCE_TIME`:The time to wait for form validation when values change, set to the default of `300` milliseconds.
 * `SCROLL_DELAY`: The time to wait before scrolling to an error control, set to the default of 0 milliseconds.
-* `parcel`: Any object or value to be passed to the forms.
 
 
 _Note that these settings can be overridden when specified in a specific `useForm` hook._

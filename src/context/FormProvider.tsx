@@ -51,7 +51,7 @@ const FormProvider = (formProviderProps?: FormProviderPropsType) => {
   }
 
   // function to handle update of the form values
-  function updateFormSandBoxObject({ formName, sandBoxObject }: UpdateFormSandBoxObjectProps) {
+  function setFormSandBoxObject({ formName, sandBoxObject }: UpdateFormSandBoxObjectProps) {
     setFormState(prev => ({
       ...prev,
       [formName]: { ...prev[formName], sandBoxObject },
@@ -67,7 +67,7 @@ const FormProvider = (formProviderProps?: FormProviderPropsType) => {
       updateFormValues,
       updateFormErrors,
       updateFormTouchedErrors,
-      updateFormSandBoxObject,
+      setFormSandBoxObject,
       settings:
         formProviderProps && formProviderProps?.settings
           ? formProviderProps.settings
