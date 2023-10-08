@@ -51,7 +51,7 @@ function useForm({
 
   // function to reset form
   function resetForm() {
-    setValues(() => ({}));
+    setValues({});
     setErrors({});
     setTouchedErrors({});
     setTouchedControls({});
