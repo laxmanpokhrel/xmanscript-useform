@@ -80,7 +80,7 @@ function useForm({
       formContextState?.initializeFormToContext(formName);
     }
     // set the empty metadata of the form
-    formContextState?.setMetaData(prev => ({ ...prev, [formName]: {} }));
+    formContextState?.setMetaData(formName, {});
 
     // set the sandBox object of the form
     formContextState?.setFormSandBoxObject({ formName, sandBoxObject });
@@ -116,10 +116,6 @@ function useForm({
       const hasControlFillers = typeof controlFillers === 'object' && Object.keys(controlFillers).length > 0;
 
       // if the form is already prefilled we do not prefill it again, if donw we'll loose the previous context of the changes in the form
-      console.log(
-        '🚦 ~ file: index.tsx:119 ~ formContextState?.metaData[formName]?.isFormPrefilled:',
-        formContextState?.metaData
-      );
       if ((hasPreFiller || hasControlFillers) && !formContextState?.metaData[formName]?.isFormPrefilled) {
         try {
           // Begin setting isPreFillingForm state
@@ -171,19 +167,12 @@ function useForm({
           }
 
           // for internal use only
-          formContextState?.setMetaData(prev => ({
-            ...prev,
-            [formName]: { ...prev[formName], isFormPrefilled: true },
-          }));
-
+          formContextState?.setMetaData(formName, { isFormPrefilled: true });
           // Update initial and values
           setInitial(preFillValues);
           setValues(preFillValues);
         } catch (error) {
-          formContextState?.setMetaData(prev => ({
-            ...prev,
-            [formName]: { ...prev[formName], isFormPrefilled: false },
-          }));
+          formContextState?.setMetaData(formName, { isFormPrefilled: false });
           throw new Error(`Error Occurred. ${error}`);
         } finally {
           // Always set isPreFillingForm to false when done

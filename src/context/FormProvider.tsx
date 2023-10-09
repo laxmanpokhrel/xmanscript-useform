@@ -10,11 +10,16 @@ import {
 } from '../@types';
 import { fromContextInitialState, singleFormInitialState } from '../constants';
 
+let metaData: Record<string, any> = {};
+
 const FormProvider = (formProviderProps?: FormProviderPropsType) => {
   const [formState, setFormState] = React.useState(fromContextInitialState);
-  const [metaData, setMetaData] = React.useState<Record<string, any>>({});
+
   // this variable is for the internal use of context only
-  // function to set the meta data
+  // function to sset the meta data
+  function setMetaData(key: string, value: Record<string, any>) {
+    metaData = { ...metaData, [key]: { ...metaData[key], ...value } };
+  }
 
   // function to initialize form to context
   function initializeFormToContext(formName: string) {
