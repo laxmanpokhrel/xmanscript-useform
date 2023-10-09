@@ -12,10 +12,12 @@ import { fromContextInitialState, singleFormInitialState } from '../constants';
 
 const FormProvider = (formProviderProps?: FormProviderPropsType) => {
   const [formState, setFormState] = React.useState(fromContextInitialState);
+  const [metaData, setMetaData] = React.useState<Record<string, any>>({});
+  // this variable is for the internal use of context only
+  // function to set the meta data
 
   // function to initialize form to context
   function initializeFormToContext(formName: string) {
-    console.log('inside initialize');
     setFormState(prev => ({ ...prev, [formName]: singleFormInitialState }));
   }
 
@@ -69,6 +71,8 @@ const FormProvider = (formProviderProps?: FormProviderPropsType) => {
       updateFormErrors,
       updateFormTouchedErrors,
       setFormSandBoxObject,
+      setMetaData,
+      metaData,
       settings:
         formProviderProps && formProviderProps?.settings
           ? formProviderProps.settings

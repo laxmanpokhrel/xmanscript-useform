@@ -86,6 +86,8 @@ export type ContextValueType = {
   updateFormTouchedErrors: ({ formName, update }: UpdateFormTouchedErrorsProps) => void;
   setFormSandBoxObject: ({ formName, sandBoxObject }: UpdateFormSandBoxObjectProps) => void;
   settings: SettingsType;
+  setMetaData: React.Dispatch<React.SetStateAction<Record<string, any>>>;
+  metaData: Record<string, any>;
 };
 
 export type useFormContextDataOutput = Record<string, any>;

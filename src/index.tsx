@@ -22,12 +22,12 @@ import { defaultFormState } from './constants';
 import useFormContextData from './hooks/useFormContextData';
 
 function useForm({
+  formName,
   initialValues,
   validationSchema,
   settings,
   validateOnSubmit,
   touchOnChange,
-  formName,
   submitHandler,
   scrollToErrorControl = true,
   onChangeInterceptor,
@@ -69,6 +69,7 @@ function useForm({
     resetForm,
     parcel: parcel || null,
   };
+
   React.useEffect(() => {
     // register form to context
     if (persistValues && formContextState) {
@@ -78,6 +79,10 @@ function useForm({
     } else {
       formContextState?.initializeFormToContext(formName);
     }
+    // set the empty metadata of the form
+    formContextState?.setMetaData(prev => ({ ...prev, [formName]: {} }));
+
+    // set the sandBox object of the form
     formContextState?.setFormSandBoxObject({ formName, sandBoxObject });
   }, []);
 
@@ -110,7 +115,12 @@ function useForm({
       const hasPreFiller = preFillerFn != null;
       const hasControlFillers = typeof controlFillers === 'object' && Object.keys(controlFillers).length > 0;
 
-      if (hasPreFiller || hasControlFillers) {
+      // if the form is already prefilled we do not prefill it again, if donw we'll loose the previous context of the changes in the form
+      console.log(
+        '🚦 ~ file: index.tsx:119 ~ formContextState?.metaData[formName]?.isFormPrefilled:',
+        formContextState?.metaData
+      );
+      if ((hasPreFiller || hasControlFillers) && !formContextState?.metaData[formName]?.isFormPrefilled) {
         try {
           // Begin setting isPreFillingForm state
           setFormState(prev => ({ ...prev, isPreFillingForm: true }));
@@ -143,7 +153,8 @@ function useForm({
 
                 // set control filling to false
                 setControlFilling(prev => ({ ...prev, [key]: false }));
-              } else if (typeof func === 'function' && !isAsyncFunction(func)) {
+              }
+              if (typeof func === 'function' && !isAsyncFunction(func)) {
                 // get values from controlFillerFn synchronously
                 const controlFillerValue = func();
 
@@ -159,10 +170,20 @@ function useForm({
             await Promise.all(controlFillerPromises);
           }
 
+          // for internal use only
+          formContextState?.setMetaData(prev => ({
+            ...prev,
+            [formName]: { ...prev[formName], isFormPrefilled: true },
+          }));
+
           // Update initial and values
           setInitial(preFillValues);
           setValues(preFillValues);
         } catch (error) {
+          formContextState?.setMetaData(prev => ({
+            ...prev,
+            [formName]: { ...prev[formName], isFormPrefilled: false },
+          }));
           throw new Error(`Error Occurred. ${error}`);
         } finally {
           // Always set isPreFillingForm to false when done

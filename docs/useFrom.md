@@ -48,13 +48,13 @@ import { useForm } from "@xmanscript/useform";
   -set validation schema with `yup` object
   ```ts
     const { register } = useForm({
- formName: 'user_detail_form',
- initialValues:{ fullName: 'Harka Bahadur', gender: 'male' },
- validationSchema: object({
-   fullName: string().required('Full Name is Required'),
-   gender: string().required('Gender is Required'),
- }),
-});
+      formName: 'user_detail_form',
+      initialValues:{ fullName: 'Harka Bahadur', gender: 'male' },
+      validationSchema: object({
+        fullName: string().required('Full Name is Required'),
+        gender: string().required('Gender is Required'),
+      }),
+    });
   ```
 
 -OR apply validation function
@@ -72,8 +72,6 @@ const { register } = useForm({
   });
 ```
 
-  
-
 4. `submitHandler`:
    - **Description**: This is a function used to handle the form submission.
    - **Usage**: Define your custom logic for form submission using this function.
@@ -89,7 +87,7 @@ const { register } = useForm({
       return error;
     },
     submitHandler:(packet,sandBoxObject)=>{
-      const { initialPacket, currentPacket, differencePacket }=packet;
+      const { initialPacket, currentPacket, differencePacket } = packet;
       // handle form submition here
     }
   });
