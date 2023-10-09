@@ -15,6 +15,7 @@ const FormProvider = (formProviderProps?: FormProviderPropsType) => {
 
   // function to initialize form to context
   function initializeFormToContext(formName: string) {
+    console.log('inside initialize');
     setFormState(prev => ({ ...prev, [formName]: singleFormInitialState }));
   }
 

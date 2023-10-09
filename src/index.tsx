@@ -51,7 +51,7 @@ function useForm({
 
   // function to reset form
   function resetForm() {
-    setValues({});
+    setValues(initialValues);
     setErrors({});
     setTouchedErrors({});
     setTouchedControls({});
@@ -75,8 +75,9 @@ function useForm({
       // get the form values from the context
       const valuesFromContext = formContextState.formContextData[formName]?.values || {};
       setValues(valuesFromContext);
+    } else {
+      formContextState?.initializeFormToContext(formName);
     }
-    formContextState?.initializeFormToContext(formName);
     formContextState?.setFormSandBoxObject({ formName, sandBoxObject });
   }, []);
 
