@@ -129,27 +129,45 @@ const { register } = useForm({
 * `touchedErrors` error object of controls that are touched.
 * `errors` error object of the form wether the control is touched or not.
 
-6. `controlFillers`:
-   - **Description**: This attribute is used to add separate pre-filler functions for each form control.
-   - **Usage**: Customize the initialization of individual form controls using this feature.
+6. `preFill`:
+   - **Description**: This attribute is used to add separate pre-filler functions overall form and for each control.
+   - **Usage**: Customize the initialization of form and individual form controls using this feature.
 
 ```tsx
 const { register } = useForm({
     formName: 'user_detail_form',
-    initialValues:{ fullName: 'Harka Bahadur', gender: 'male' },
-    controlFillers: {
-      gender: async () => {
-        const genderList=await getGenderList();
-        return genderList;
-      },
+    initialValues: { fullName: 'Harka Bahadur', gender: 'male' },
+    preFill: {
+        formPreFiller: {
+            fn: async () => {
+                // Fetch data to prefill the entire form
+                const genderList = await getFormData(id);
+                return genderList;
+            },
+            enable: !!id,
+        },
+        controlFiller: {
+            gender: {
+                fn: async () => {
+                    // Fetch data specifically for the 'gender' control
+                    const genderList = await getGenderList();
+                    return genderList;
+                },
+                enable: true,
+            },
+        },
     },
-  });
+});
+
 ```
-* `controlFillers` is used to fill the individual contols with initial values. Here `gender` control has to be filled with the list of genders fetched from the server.
+* `preFill` is used to fill the form and individual contols with initial values. Here `gender` control has to be filled with the list of genders fetched from the server and the overall form with as well.
+* using both `preFill` ie; `formPreFiller` and `controlFiller` might look confusing because the controls can be filled by the `formPreFiller` as well. But `controlFiller` are provided to fulfill some special cases of only filling some controls. Controls filled by `formPreFiller` will be overridden by `controlFiller`.
 
-Well, we can fetch externally and fill it in. But if we passed it in `controlFillers` it will be easy to handle state of the form. We can track if the form is prefilling the controls by loking into `formState`, which has `isPrefillingForm` attrubute. 
-
+Well, we can fetch externally and fill it in. But if we passed it in `preFill` it will be easy to handle state of the form. We can track if the form is prefilling the controls by loking into `formState`, which has `isPrefillingForm` attrubute. 
 ##### Learn more about `formState` [here](./formstate.md).
+
+The `preFill` attribute simplifies the process of initializing your form and form controls with data. It offers flexibility and control, allowing you to customize your form's initial state effortlessly. 
+
 
 7. `validateOnSubmit`:
    - **Description**: This attribute, by default, is set to `false`.

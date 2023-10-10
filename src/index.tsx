@@ -33,8 +33,9 @@ function useForm({
   onChangeInterceptor,
   onSubmitDataInterceptor,
   isNestedForm,
-  preFillerFn,
-  controlFillers,
+  // preFillerFn,
+  // controlFillers,
+  preFill,
   parcel,
   persistValues,
 }: IUseFormInputProps): UseFormOutputType {
@@ -112,34 +113,36 @@ function useForm({
 
   React.useEffect(() => {
     (async () => {
-      const hasPreFiller = preFillerFn != null;
-      const hasControlFillers = typeof controlFillers === 'object' && Object.keys(controlFillers).length > 0;
+      const hasPreFiller = preFill.formPreFiller != null;
+      const hasControlFillers =
+        typeof preFill.controlFiller === 'object' && Object.keys(preFill.formPreFiller).length > 0;
 
       // if the form is already prefilled we do not prefill it again, if donw we'll loose the previous context of the changes in the form
       if ((hasPreFiller || hasControlFillers) && !formContextState?.metaData[formName]?.isFormPrefilled) {
         try {
           // Begin setting isPreFillingForm state
           setFormState(prev => ({ ...prev, isPreFillingForm: true }));
-
+          const { fn } = preFill.formPreFiller;
           let preFillValues = {};
 
-          if (hasPreFiller) {
-            if (isAsyncFunction(preFillerFn)) {
+          // run only if forPreFiller is enable
+          if (hasPreFiller && preFill.formPreFiller.enable) {
+            if (isAsyncFunction(fn)) {
               // get the prefill values asynchronously
-              preFillValues = await preFillerFn();
+              preFillValues = await fn();
             } else {
-              preFillValues = preFillerFn();
+              preFillValues = fn();
             }
           }
 
           if (hasControlFillers) {
-            const controlFillerPromises = Object.entries(controlFillers).map(async ([key, func]) => {
-              if (isAsyncFunction(func)) {
+            const controlFillerPromises = Object.entries(preFill.controlFiller).map(async ([key, value]) => {
+              if (value.enable && isAsyncFunction(value.fn)) {
                 // set control filling to true
                 setControlFilling(prev => ({ ...prev, [key]: true }));
 
                 // get values from controlFillerFn asynchronously
-                const controlFillerValue = await func();
+                const controlFillerValue = await value.fn();
 
                 // set the received value
                 setValues(prev => ({ ...prev, [key]: controlFillerValue }));
@@ -150,9 +153,9 @@ function useForm({
                 // set control filling to false
                 setControlFilling(prev => ({ ...prev, [key]: false }));
               }
-              if (typeof func === 'function' && !isAsyncFunction(func)) {
+              if (value.enable && typeof value.fn === 'function' && !isAsyncFunction(value.fn)) {
                 // get values from controlFillerFn synchronously
-                const controlFillerValue = func();
+                const controlFillerValue = value.fn();
 
                 // set the received value
                 setValues(prev => ({ ...prev, [key]: controlFillerValue }));

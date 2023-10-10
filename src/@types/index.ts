@@ -132,6 +132,21 @@ export interface IYupError {
   path: string;
 }
 
+type FillerObjectType = {
+  fn: SyncPrefillerFunction | AsyncPrefillerFunction;
+  enable?: boolean;
+};
+
+type ControlFillerType = {
+  fn: (() => Promise<any>) | (() => any);
+  enable?: boolean;
+};
+
+type PrefillType = {
+  formPreFiller: FillerObjectType;
+  controlFiller: Record<string, ControlFillerType>;
+};
+
 export interface IUseFormInputProps {
   formName: string;
   initialValues: Record<string, any>;
@@ -144,8 +159,9 @@ export interface IUseFormInputProps {
   touchOnChange?: boolean;
   submitHandler?: SyncSubmitHandlerFunction | AsyncSubmitHandlerFunction;
   scrollToErrorControl?: boolean;
-  preFillerFn?: SyncPrefillerFunction | AsyncPrefillerFunction;
-  controlFillers?: Record<string, (() => Promise<any>) | (() => any)>;
+  preFill: PrefillType;
   parcel?: any | null;
   persistValues?: boolean;
+  // preFillerFn?: SyncPrefillerFunction | AsyncPrefillerFunction;
+  // controlFillers?: Record<string, (() => Promise<any>) | (() => any)>;
 }
