@@ -64,7 +64,6 @@ const { register } = useForm({
 });
 ```
 If no validation schema is provided, the form will be submitted directly when clicking the submit button.
-##### Learn more about `validationSchema` [here](./validationSchema.md).
 
 ## 4. Submiting the Form
 
