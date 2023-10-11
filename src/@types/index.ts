@@ -5,9 +5,9 @@ import { ObjectSchema, Schema } from 'yup';
 export type formStateType = {
   isPreFillingForm: boolean;
   isSubmittingForm: boolean;
-  submitionError: boolean;
+  isSubmitionError: boolean;
   hasError: boolean;
-  error: string | null;
+  submitionError: any;
 };
 export interface ISandBoxObject {
   setValues: React.Dispatch<React.SetStateAction<Record<string, any>>>;

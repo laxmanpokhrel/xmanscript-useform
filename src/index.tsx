@@ -285,7 +285,7 @@ function useForm({
       }
     } catch (error: any) {
       // set submition status
-      setFormState(prev => ({ ...prev, submitionError: true, error }));
+      setFormState(prev => ({ ...prev, isSubmitionError: true, submitionError: error }));
       throw new Error(`Error While Submiting Form. ${error}`);
     } finally {
       // set submitting status

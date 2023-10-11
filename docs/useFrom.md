@@ -1,4 +1,4 @@
-# `useForm` Function Documentation,
+# `useForm` Function Documentation
 
 The `useForm` function accepts the following attributes as input:
 
