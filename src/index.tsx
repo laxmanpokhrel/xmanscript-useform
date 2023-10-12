@@ -113,9 +113,9 @@ function useForm({
 
   React.useEffect(() => {
     (async () => {
-      const hasPreFiller = preFill.formPreFiller != null;
+      const hasPreFiller = preFill?.formPreFiller != null;
       const hasControlFillers =
-        typeof preFill.controlFiller === 'object' && Object.keys(preFill.formPreFiller).length > 0;
+        typeof preFill?.controlFiller === 'object' && Object.keys(preFill?.formPreFiller).length > 0;
 
       // if the form is already prefilled we do not prefill it again, if donw we'll loose the previous context of the changes in the form
       if ((hasPreFiller || hasControlFillers) && !formContextState?.metaData[formName]?.isFormPrefilled) {

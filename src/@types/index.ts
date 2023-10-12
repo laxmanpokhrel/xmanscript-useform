@@ -159,7 +159,7 @@ export interface IUseFormInputProps {
   touchOnChange?: boolean;
   submitHandler?: SyncSubmitHandlerFunction | AsyncSubmitHandlerFunction;
   scrollToErrorControl?: boolean;
-  preFill: PrefillType;
+  preFill?: PrefillType;
   parcel?: any | null;
   persistValues?: boolean;
   // preFillerFn?: SyncPrefillerFunction | AsyncPrefillerFunction;
