@@ -2,6 +2,7 @@
   "name": "@xmanscript/useform",
   "version": "1.0.0-semantically-released",
   "description": "Yet another useForm hook to confuse developers.",
+  "types": "./lib/@types",
   "repository": {
     "type": "git",
     "url": "https://github.com/laxmanpokhrel/xmanscript-useform.git"
