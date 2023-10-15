@@ -1,4 +1,4 @@
-# `useForm` Function Documentation,
+# `useForm` Function Documentation
 
 The `useForm` function accepts the following attributes as input:
 
@@ -26,6 +26,8 @@ import { useForm } from "@xmanscript/useform";
    const userDetailFormData = useFormContextData('user_detail_form');
    ```
 
+##### Learn more about using form context [here](./UsingContext.md)
+
 2. `initialValues` (*required*):
    - **Description**: This attribute is also required and represents an object that initializes the form controls.
    - **Usage**: If provided empty object, it will result in a 'controlled input to be uncontrolled' warning. It is recommended to provide initial value for each of the controls of the form.
@@ -46,13 +48,13 @@ import { useForm } from "@xmanscript/useform";
   -set validation schema with `yup` object
   ```ts
     const { register } = useForm({
- formName: 'user_detail_form',
- initialValues:{ fullName: 'Harka Bahadur', gender: 'male' },
- validationSchema: object({
-   fullName: string().required('Full Name is Required'),
-   gender: string().required('Gender is Required'),
- }),
-});
+      formName: 'user_detail_form',
+      initialValues:{ fullName: 'Harka Bahadur', gender: 'male' },
+      validationSchema: object({
+        fullName: string().required('Full Name is Required'),
+        gender: string().required('Gender is Required'),
+      }),
+    });
   ```
 
 -OR apply validation function
@@ -70,8 +72,6 @@ const { register } = useForm({
   });
 ```
 
-  
-
 4. `submitHandler`:
    - **Description**: This is a function used to handle the form submission.
    - **Usage**: Define your custom logic for form submission using this function.
@@ -87,7 +87,7 @@ const { register } = useForm({
       return error;
     },
     submitHandler:(packet,sandBoxObject)=>{
-      const { initialPacket, currentPacket, differencePacket }=packet;
+      const { initialPacket, currentPacket, differencePacket } = packet;
       // handle form submition here
     }
   });
@@ -99,7 +99,7 @@ const { register } = useForm({
 * just like `submitHandler` received the `sandBoxObject` other functions like `onSubmitDataInterceptor`, `setCustomValue` in `register` and `onChangeInterceptor` also receive `sandBoxObject` as second parameter.
 
 
-Learn more about `sandBoxObject` [here](./sandBoxObject.md).
+##### Learn more about `sandBoxObject` [here](./sandBoxObject.md).
 
 5. `onChangeInterceptor`:
    - **Description**: This function allows you to add custom logic for value changes in the form.
@@ -129,27 +129,45 @@ Learn more about `sandBoxObject` [here](./sandBoxObject.md).
 * `touchedErrors` error object of controls that are touched.
 * `errors` error object of the form wether the control is touched or not.
 
-6. `controlFillers`:
-   - **Description**: This attribute is used to add separate pre-filler functions for each form control.
-   - **Usage**: Customize the initialization of individual form controls using this feature.
+6. `preFill`:
+   - **Description**: This attribute is used to add separate pre-filler functions overall form and for each control.
+   - **Usage**: Customize the initialization of form and individual form controls using this feature.
 
 ```tsx
 const { register } = useForm({
     formName: 'user_detail_form',
-    initialValues:{ fullName: 'Harka Bahadur', gender: 'male' },
-    controlFillers: {
-      gender: async () => {
-        const genderList=await getGenderList();
-        return genderList;
-      },
+    initialValues: { fullName: 'Harka Bahadur', gender: 'male' },
+    preFill: {
+        formPreFiller: {
+            fn: async () => {
+                // Fetch data to prefill the entire form
+                const genderList = await getFormData(id);
+                return genderList;
+            },
+            enable: !!id,
+        },
+        controlFiller: {
+            gender: {
+                fn: async () => {
+                    // Fetch data specifically for the 'gender' control
+                    const genderList = await getGenderList();
+                    return genderList;
+                },
+                enable: true,
+            },
+        },
     },
-  });
+});
+
 ```
-* `controlFillers` is used to fill the individual contols with initial values. Here `gender` control has to be filled with the list of genders fetched from the server.
+* `preFill` is used to fill the form and individual contols with initial values. Here `gender` control has to be filled with the list of genders fetched from the server and the overall form with as well.
+* using both `preFill` ie; `formPreFiller` and `controlFiller` might look confusing because the controls can be filled by the `formPreFiller` as well. But `controlFiller` are provided to fulfill some special cases of only filling some controls. Controls filled by `formPreFiller` will be overridden by `controlFiller`.
 
-Well, we can fetch externally and fill it in. But if we passed it in `controlFillers` it will be easy to handle state of the form. We can track if the form is prefilling the controls by loking into `formState`, which has `isPrefillingForm` attrubute. 
+Well, we can fetch externally and fill it in. But if we passed it in `preFill` it will be easy to handle state of the form. We can track if the form is prefilling the controls by loking into `formState`, which has `isPrefillingForm` attrubute. 
+##### Learn more about `formState` [here](./formstate.md).
 
-Learn more about `formState` [here](./formstate.md).
+The `preFill` attribute simplifies the process of initializing your form and form controls with data. It offers flexibility and control, allowing you to customize your form's initial state effortlessly. 
+
 
 7. `validateOnSubmit`:
    - **Description**: This attribute, by default, is set to `false`.
@@ -204,9 +222,8 @@ By default form is validated when the value changes and before submiting form. W
 
 The `useForm` function also provides the following output attributes:
 
-- **`bindValues`**:
-  - *Description*: Holds the current values of the form. This prop would have been named `values` but `values` being commonly used `bindValues` would be much better to avoid naming clash.
-
+- **`values`**:
+  - *Description*: Holds the current values of the form.
 - **`errors`**:
   - *Description*: Contains the current errors of the form.
 
@@ -223,6 +240,10 @@ The `useForm` function also provides the following output attributes:
   - *Description*: A function used to hook the controls to the form.
 
 - **`onSubmitHandler`**:
-  - *Description*: Listens to the submit action of the form.
+  - *Description*: Listens to the submit action of the form. It can also be called directly without passing any arguments.
+
+- **`resetForm`**: 
+  - *Description*: Resets form.
+
 
 These attributes and options provide flexibility and control over form initialization, validation, and handling within your application.

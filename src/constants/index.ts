@@ -4,9 +4,9 @@ import { formContextStateType, formStateType } from '../@types';
 export const defaultFormState: formStateType = {
   isPreFillingForm: false,
   isSubmittingForm: false,
-  submitionError: false,
-  hasError: false,
-  error: null,
+  isSubmitionError: false,
+  hasError: true,
+  submitionError: null,
 };
 
 // current state of the form

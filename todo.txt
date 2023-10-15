@@ -1,4 +1,7 @@
-[]- handleSubmit can be callable from any other place 
-[]- passin settings from context
-[]- handle context inside a context scenerio
+[x]- handleSubmit can be callable from any other place 
+[x]- passin settings from context
+[x]- handle context inside a context scenerio
+[x]- paralle fetching of controlfillers
+[x]- provide sandBoxObject in context
+[]- add config to add values from context when form mounts. rest of the logic is same but when component mounts we have to check if the config in true, if true then we shuld initialize the values to the that value.
 []- 

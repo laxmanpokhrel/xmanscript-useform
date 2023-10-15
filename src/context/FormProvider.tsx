@@ -1,11 +1,25 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import * as React from 'react';
 import FormContext from './formContext';
-import { ContextValueType, FormProviderPropsType, UpdateFormDataProps, UpdateFormStateProps } from '../@types';
+import {
+  ContextValueType,
+  FormProviderPropsType,
+  UpdateFormDataProps,
+  UpdateFormSandBoxObjectProps,
+  UpdateFormStateProps,
+} from '../@types';
 import { fromContextInitialState, singleFormInitialState } from '../constants';
 
-const FormProvider = ({ children, settings }: FormProviderPropsType) => {
+let metaData: Record<string, any> = {};
+
+const FormProvider = (formProviderProps?: FormProviderPropsType) => {
   const [formState, setFormState] = React.useState(fromContextInitialState);
+
+  // this variable is for the internal use of context only
+  // function to sset the meta data
+  function setMetaData(key: string, value: Record<string, any>) {
+    metaData = { ...metaData, [key]: { ...metaData[key], ...value } };
+  }
 
   // function to initialize form to context
   function initializeFormToContext(formName: string) {
@@ -37,10 +51,18 @@ const FormProvider = ({ children, settings }: FormProviderPropsType) => {
   }
 
   // function to handle update of the form values
-  function updateFormData({ formName, update }: UpdateFormDataProps) {
+  function updateFormValues({ formName, update }: UpdateFormDataProps) {
     setFormState(prev => ({
       ...prev,
       [formName]: { ...prev[formName], values: { ...prev[formName].values, ...update } },
+    }));
+  }
+
+  // function to handle update of the form values
+  function setFormSandBoxObject({ formName, sandBoxObject }: UpdateFormSandBoxObjectProps) {
+    setFormState(prev => ({
+      ...prev,
+      [formName]: { ...prev[formName], sandBoxObject },
     }));
   }
 
@@ -50,14 +72,24 @@ const FormProvider = ({ children, settings }: FormProviderPropsType) => {
       formContextData: formState,
       initializeFormToContext,
       updateFormState,
-      updateFormData,
+      updateFormValues,
       updateFormErrors,
       updateFormTouchedErrors,
-      settings,
+      setFormSandBoxObject,
+      setMetaData,
+      metaData,
+      settings:
+        formProviderProps && formProviderProps?.settings
+          ? formProviderProps.settings
+          : { DEBOUNCE_TIME: 300, SCROLL_DELAY: 0, parcel: null },
     };
   }, [formState]);
 
-  return <FormContext.Provider value={contextValue}>{children}</FormContext.Provider>;
+  return (
+    <FormContext.Provider value={contextValue}>
+      {formProviderProps ? formProviderProps.children : null}
+    </FormContext.Provider>
+  );
 };
 
 export default FormProvider;

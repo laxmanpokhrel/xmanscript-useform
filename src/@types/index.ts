@@ -5,12 +5,12 @@ import { ObjectSchema, Schema } from 'yup';
 export type formStateType = {
   isPreFillingForm: boolean;
   isSubmittingForm: boolean;
-  submitionError: boolean;
+  isSubmitionError: boolean;
   hasError: boolean;
-  error: string | null;
+  submitionError: any;
 };
 export interface ISandBoxObject {
-  setBindValues: React.Dispatch<React.SetStateAction<Record<string, any>>>;
+  setValues: React.Dispatch<React.SetStateAction<Record<string, any>>>;
   setErrors: React.Dispatch<React.SetStateAction<Record<string, any>>>;
   setTouchedErrors: React.Dispatch<React.SetStateAction<Record<string, any>>>;
   setTouchedControls: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
@@ -18,26 +18,24 @@ export interface ISandBoxObject {
   setFormState: React.Dispatch<React.SetStateAction<formStateType>>;
   setControlFilling: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
   resetForm: () => void;
-  parcel: any;
+  parcel: any | null;
 }
 
-export interface RegisterOutputType {
+export interface IRegisterOutputProps {
   id: string;
   touchederror: any;
   error: any;
   haserror: boolean;
   touched: boolean;
   enable: boolean;
-  bindvalue: any;
   value: any;
   onTouchHandler: () => void; // will just have to execute this function
-  onChangeHandler: (e: any) => void; //  will just have to execute this function
-  onChange: (e: any) => void; // controls will just have to execute this function
+  onChange: (e: any) => void;
   controlname: string;
   controlfilling: boolean;
 }
 
-type SetEnableInputProps = { bindValue: any; bindvalues: any };
+type SetEnableInputProps = { bindValue: any; values: any };
 
 export type RegisterParamProps = {
   setCustomValue?: (value: any, sandBoxObject: ISandBoxObject) => any;
@@ -49,16 +47,17 @@ export type formContextStateType = {
   values: Record<string, any>;
   errors: Record<string, any>;
   touchedErrors: Record<string, any>;
+  sandBoxObject?: ISandBoxObject;
 };
 
 export type UseFormOutputType = {
-  bindValues: Record<string, any>;
-  // setBindValues: React.Dispatch<React.SetStateAction<Record<string, any>>>;
+  values: Record<string, any>;
+  setValues: React.Dispatch<React.SetStateAction<Record<string, any>>>;
   errors: Record<string, any>;
   touchedErrors: Record<string, any>;
   setErrors: React.Dispatch<React.SetStateAction<Record<string, any>>>;
   formState: formStateType;
-  register: (controlName: string, registerParamProps?: RegisterParamProps) => RegisterOutputType;
+  register: (controlName: string, registerParamProps?: RegisterParamProps) => IRegisterOutputProps;
   onSubmitHandler: (
     e: React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => Promise<void>;
@@ -70,23 +69,28 @@ export type UpdateFormStateProps = { formName: string; update: Partial<formState
 export type UpdateFormDataProps = { formName: string; update: Record<string, any> };
 export type UpdateFormErrorsProps = { formName: string; update: Record<string, any> };
 export type UpdateFormTouchedErrorsProps = { formName: string; update: Record<string, any> };
+export type UpdateFormSandBoxObjectProps = { formName: string; sandBoxObject: ISandBoxObject };
 
 export type SettingsType = {
-  DEBOUNCE_TIME: number;
-  SCROLL_DELAY: number;
+  DEBOUNCE_TIME?: number;
+  SCROLL_DELAY?: number;
+  parcel?: any | null;
 };
 
 export type ContextValueType = {
   formContextData: Record<string, formContextStateType>;
   initializeFormToContext: (formName: string) => void;
   updateFormState: ({ formName, update }: UpdateFormStateProps) => void;
-  updateFormData: ({ formName, update }: UpdateFormDataProps) => void;
+  updateFormValues: ({ formName, update }: UpdateFormDataProps) => void;
   updateFormErrors: ({ formName, update }: UpdateFormErrorsProps) => void;
   updateFormTouchedErrors: ({ formName, update }: UpdateFormTouchedErrorsProps) => void;
+  setFormSandBoxObject: ({ formName, sandBoxObject }: UpdateFormSandBoxObjectProps) => void;
   settings: SettingsType;
+  metaData: Record<string, any>;
+  setMetaData: (key: string, value: Record<string, any>) => void;
 };
 
-export type useFormDataOutput = Record<string, any>;
+export type useFormContextDataOutput = Record<string, any>;
 
 export type SubmitHandlerInputProps = {
   currentPacket: Record<string, any>;
@@ -102,14 +106,11 @@ export type AsyncSubmitHandlerFunction = (
 export type SyncPrefillerFunction = () => Record<string, any>;
 export type AsyncPrefillerFunction = () => Promise<Record<string, any>>;
 
-export type FormProviderPropsType = { children: React.ReactNode; settings: SettingsType };
+export type FormProviderPropsType = { children?: React.ReactNode; settings?: SettingsType };
 
-// ****************************************************
-// ***************** interface ************************
-// ****************************************************
 export interface IRegisterProps
   extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange' | 'onFocus' | 'onAbort'> {
-  bindvalue: any;
+  value: any;
   onFocus: (e?: any) => void;
   onChange: (e: any) => void;
   touched: boolean;
@@ -131,6 +132,21 @@ export interface IYupError {
   path: string;
 }
 
+type FillerObjectType = {
+  fn: SyncPrefillerFunction | AsyncPrefillerFunction;
+  enable?: boolean;
+};
+
+type ControlFillerType = {
+  fn: (() => Promise<any>) | (() => any);
+  enable?: boolean;
+};
+
+type PrefillType = {
+  formPreFiller: FillerObjectType;
+  controlFiller: Record<string, ControlFillerType>;
+};
+
 export interface IUseFormInputProps {
   formName: string;
   initialValues: Record<string, any>;
@@ -143,7 +159,9 @@ export interface IUseFormInputProps {
   touchOnChange?: boolean;
   submitHandler?: SyncSubmitHandlerFunction | AsyncSubmitHandlerFunction;
   scrollToErrorControl?: boolean;
-  preFillerFn?: SyncPrefillerFunction | AsyncPrefillerFunction;
-  controlFillers?: Record<string, (() => Promise<any>) | (() => any)>;
-  parcel?: any;
+  preFill?: PrefillType;
+  parcel?: any | null;
+  persistValues?: boolean;
+  // preFillerFn?: SyncPrefillerFunction | AsyncPrefillerFunction;
+  // controlFillers?: Record<string, (() => Promise<any>) | (() => any)>;
 }

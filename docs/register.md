@@ -20,33 +20,64 @@ The generic implementation if the `register` method look like this:
     })}
 />
 ```
-Let's discuss the attributes that we passed in above example
-
-- First Parameter:  `fullName` is the name of that control, with which it will be registered to `useForm` hook. Value of that control will be saved in that particular key in `bindValues` object.
-- Second Parameter: Second Parameter is an object that takes in two functions:
-
-    1. `setCustomValue`: This function is to setCustomValue to the form when it's value is changing. In above example when the user types `kaaji shayab` the control will get  `He is the DON! 😎` as a value. It has a lot more usecases.
-    2.  `setEnable`: This function provides a way to add control enabling and disabling logic when its value changes. Here we get:
-        * `bindValue`: gives the current value of the control
-        * `bindValues`: gives value of all controls. This is useful when we have to enable or disable some controls based on other control of the form.
 
 
-Let's discuss about the output attributes the register method provides:
+## Attributes for Custom Form Control Registration
 
-NOTE: While designing any custom form control which is `@xmanscript/useform` friendly you should utilize all these props for the control to perfectly sync with the features `@xmanscript/useForm` provides.
+When designing a custom form control that integrates with the `@xmanscript/useForm` library, it's important to understand the attributes passed during registration:
 
-- `id` (type: `string`): Represents an unique identifier of the control. It is applicable while scrolling to the error control. If your custom form control doesnot consume this id `useForm` wont be able to scroll to it when error occures.
-- `touchederror` (type: `any`): This prop will receive error if the control is touched and has has error while validating.
-- `error` (type: `any`): This prop will receive error if the control has error while validating wether it is touched or untouched.
-- `haserror` (type: `boolean`): A boolean value indicating whether the form control has any error while validating.
-- `touched` (type: `boolean`): A boolean value indicating whether the element has been touched.
-- `enable` (type: `boolean`): A boolean value indicating whether the element is enabled. By default it is `true`. If we have to apply logic on enabling or disabling control then we put our logic in `setEnable` method. 
-- `bindvalue` (type: `any`): Value of the control used for `two-way` binding.
-- `value` (type: `any`): Same as `bindValue`. Just provided different name for same thing to avoid name clash.
-- `onTouchHandler` (type: `() => void`): A function that should be executed when the element is touched. If we pass `touchOnChange:true,` while setting up `useForm` no need to execute this method, because element will be considered touched when it's value changes.
-- `onChangeHandler` (type: `(e: any) => void`): A function that should be executed when a change event occurs.
-- `onChange` (type: `(e: any) => void`): Same as onChangeHandler
-- `controlname` (type: `string`): Represents the name of the control.
-- `controlfilling` (type: `boolean`): A boolean value indicating whether the control is filling.
+1. **First Parameter (`string`)**:
+   - `fullName` in above example is the name of the control, used to register it with the `useForm` hook.
+   - The value of this control will be saved in the corresponding key within the `bindValues` object.
 
-For developers using `typescript` will have to extend or simply type the props received by your `form control` with `RegisterOutputType` provided from `@types` of the hook. 
+2. **Second Parameter (Object with Two Functions)**:
+    1. `setCustomValue`:
+     - This function allows you to set a custom value for the form control when its value is changing. For example, if a user types "kaaji shayab," the control can receive the value "He is the DON! 😎."
+     - It has various use cases beyond this example.
+
+    2. `setEnable`:
+       - This function provides a way to implement control enabling and disabling logic based on its value changes.
+       - It receives:
+         - `bindValue`: The current value of the control.
+         - `bindValues`: The values of all controls in the form, useful for enabling or disabling controls based on others.
+
+
+## Output Attributes Provided by the `register` Method
+
+While designing a custom form control that is `@xmanscript/useform` friendly, you should utilize these output attributes for seamless integration with the features `@xmanscript/useForm` provides:
+
+- `id` (type: `string`):
+  - Represents a unique identifier for the control.
+  - Useful for scrolling to the error control when an error occurs during validation.
+
+- `touchederror` (type: `any`):
+  - This prop will receive an error if the control is touched and has an error while validating.
+
+- `error` (type: `any`):
+  - This prop will receive an error if the control has an error during validation, whether it is touched or untouched.
+
+- `haserror` (type: `boolean`):
+  - A boolean value indicating whether the form control has any error during validation.
+
+- `touched` (type: `boolean`):
+  - A boolean value indicating whether the element has been touched.
+
+- `enable` (type: `boolean`):
+  - A boolean value indicating whether the element is enabled. By default, it is `true`. Control enabling or disabling logic can be implemented using the `setEnable` method.
+
+- `value` (type: `any`):
+  - The value of the control used for two-way binding.
+
+- `onTouchHandler` (type: `() => void`):
+  - A function that should be executed when the element is touched. If `touchOnChange: true` is passed while setting up `useForm`, there's no need to execute this method, as the element will be considered touched when its value changes.
+
+- `onChange` (type: `(e: any) => void`):
+  - A function that should be executed when a change event occurs.
+
+- `controlname` (type: `string`):
+  - Represents the name of the control.
+
+- `controlfilling` (type: `boolean`):
+  - A boolean value indicating whether the control is filling.
+
+Developers using TypeScript will need to extend or type the props received by their custom form control with `IRegisterOutputProps` provided from `@types` of the hook.
