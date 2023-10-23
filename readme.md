@@ -47,6 +47,8 @@ pnpm add @xmanscript/useform
 
 - **Contextual Form Data**: The hook's provider offers a context that holds form values, errors, and status, streamlining multi-step form handling.
 
+- **Persisting Form Data**: The hook can persists the data filled in the form even if the form mounts and unmounts from the dom. It can be manaully cleared.
+
 - **Error Scrolling**: By default, the form scrolls to the first error control upon submission (this can be disabled if needed).
 
 - **Validation**: You can perform validation using both "Yup" and your own custom validation functions.

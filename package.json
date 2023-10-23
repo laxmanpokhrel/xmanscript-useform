@@ -1,8 +1,9 @@
 {
   "name": "@xmanscript/useform",
-  "version": "1.0.0-semantically-released",
+  "version": "2.0.0-semantically-released",
   "description": "Yet another useForm hook to confuse developers.",
   "types": "./lib/@types",
+  "main": "./lib/index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/laxmanpokhrel/xmanscript-useform.git"
@@ -16,7 +17,6 @@
     "url": "https://github.com/laxmanpokhrel/xmanscript-useform/issues"
   },
   "homepage": "https://github.com/laxmanpokhrel/xmanscript-useform#readme",
-  "main": "./lib/index.js",
   "scripts": {
     "build": "rm -rf lib && tsc",
     "prepare": "husky install",
