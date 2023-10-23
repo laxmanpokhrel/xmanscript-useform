@@ -2,7 +2,6 @@
   "name": "@xmanscript/useform",
   "version": "2.0.0-semantically-released",
   "description": "Yet another useForm hook to confuse developers.",
-  "types": "./lib/@types",
   "main": "./lib/index.js",
   "repository": {
     "type": "git",
@@ -11,7 +10,8 @@
   "keywords": [
     "useForm",
     "With Context",
-    "useForm With Context"
+    "useForm With Context",
+    "persist form data"
   ],
   "bugs": {
     "url": "https://github.com/laxmanpokhrel/xmanscript-useform/issues"
