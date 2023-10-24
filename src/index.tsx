@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /* eslint-disable import/prefer-default-export */
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-nested-ternary */
@@ -71,15 +72,18 @@ function useForm({
     parcel: parcel || null,
   };
 
+  // for persisting or initializing form values
   React.useEffect(() => {
-    // register form to context
+    if (!formContextState) console.error('Persisting values works within a component wrapped with FormProvider only.');
     if (persistValues && formContextState) {
+      // register form to context
       // get the form values from the context
       const valuesFromContext = formContextState.formContextData[formName]?.values || {};
       setValues(valuesFromContext);
     } else {
       formContextState?.initializeFormToContext(formName);
     }
+
     // set the empty metadata of the form
     formContextState?.setMetaData(formName, {});
 

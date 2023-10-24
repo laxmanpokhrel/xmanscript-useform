@@ -1,7 +1,10 @@
 [x]- handleSubmit can be callable from any other place 
-[x]- passin settings from context
+[x]- pass in settings from context
 [x]- handle context inside a context scenerio
 [x]- paralle fetching of controlfillers
 [x]- provide sandBoxObject in context
+[x]- presistValues needs context to run, so show error when contest is not setup
+[x]- track the formNames to prevent dublicate "formName"
 []- add config to add values from context when form mounts. rest of the logic is same but when component mounts we have to check if the config in true, if true then we shuld initialize the values to the that value.
-[]- 
+[]- warn on leaving or reloading page if form submission status is not successful
+[]- provide the validation approach that the hook uses to custom validation schela along with the values    
