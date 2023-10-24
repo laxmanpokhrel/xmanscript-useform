@@ -1,11 +1,8 @@
 /* eslint-disable no-unused-vars */
-import { Schema } from 'yup';
 import { validateValueWithYupSchema } from './validateValueWithYupSchema';
+import { isAsyncFunction } from './isAsyncFunction';
+import { ValidateFormValuesProps } from '../@types';
 
-type ValidateFormValuesProps = {
-  validationSchema: Schema<any> | ((props: Record<string, unknown>) => Record<string, any>);
-  values: Record<string, any>;
-};
 export default function validateFormValues({ validationSchema, values }: ValidateFormValuesProps) {
   // for yup validation schema
   if (typeof validationSchema === 'object') {
@@ -13,7 +10,11 @@ export default function validateFormValues({ validationSchema, values }: Validat
   }
 
   // for validation function
-  if (typeof validationSchema === 'function') {
+  if (typeof validationSchema === 'function' && isAsyncFunction(validationSchema)) {
+    return validationSchema(values, validateValueWithYupSchema);
+  }
+
+  if (typeof validationSchema === 'function' && !isAsyncFunction(validationSchema)) {
     return validationSchema(values);
   }
   return {};

@@ -11,6 +11,9 @@ import {
 import { fromContextInitialState, singleFormInitialState } from '../constants';
 
 let metaData: Record<string, any> = {};
+// `Map` to keep track of form names.
+// Note: It could have been a simple array of string with form names in it, but we might need to add additional informations of the form in future so used `Map`
+const formNameCache: Map<string, any> = new Map();
 
 const FormProvider = (formProviderProps?: FormProviderPropsType) => {
   const [formState, setFormState] = React.useState(fromContextInitialState);
@@ -23,6 +26,9 @@ const FormProvider = (formProviderProps?: FormProviderPropsType) => {
 
   // function to initialize form to context
   function initializeFormToContext(formName: string) {
+    // check if the form name already exists
+    if (formNameCache.get(formName)) throw new Error('Duclicate form name. Please add a unique form name.');
+    else formNameCache.set(formName, {});
     setFormState(prev => ({ ...prev, [formName]: singleFormInitialState }));
   }
 
