@@ -6,8 +6,10 @@ export type formStateType = {
   isPreFillingForm: boolean;
   isSubmittingForm: boolean;
   isSubmitionError: boolean;
+  isSubmitionSuccess: boolean;
   hasError: boolean;
   submitionError: any;
+  hasChanges: boolean;
 };
 export interface ISandBoxObject {
   setValues: React.Dispatch<React.SetStateAction<Record<string, any>>>;
@@ -75,6 +77,7 @@ export type SettingsType = {
   DEBOUNCE_TIME?: number;
   SCROLL_DELAY?: number;
   parcel?: any | null;
+  preventUnload?: boolean;
 };
 
 export type ContextValueType = {
@@ -162,6 +165,7 @@ export interface IUseFormInputProps {
   preFill?: PrefillType;
   parcel?: any | null;
   persistValues?: boolean;
+  preventUnload?: boolean;
   // preFillerFn?: SyncPrefillerFunction | AsyncPrefillerFunction;
   // controlFillers?: Record<string, (() => Promise<any>) | (() => any)>;
 }
