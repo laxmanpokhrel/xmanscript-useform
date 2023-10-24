@@ -3,8 +3,8 @@ import formContext from '../context/formContext';
 
 export default function usePreventUnload(formName: string, preventUnload: boolean) {
   const formContextState = React.useContext(formContext);
-  const { hasChanges } = formContextState?.formContextData[formName].state || { hasChanges: false };
-  const { isSubmitionSuccess } = formContextState?.formContextData[formName].state || { isSubmitionSuccess: false };
+  const { hasChanges } = formContextState?.formContextData[formName]?.state || { hasChanges: false };
+  const { isSubmitionSuccess } = formContextState?.formContextData[formName]?.state || { isSubmitionSuccess: false };
   return React.useEffect(() => {
     if (!preventUnload)
       window.addEventListener('beforeunload', e => {
