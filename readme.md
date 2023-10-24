@@ -69,6 +69,8 @@ pnpm add @xmanscript/useform
   - **onChangeInterceptor**: Customize logic for changing values in the form.
   - **onSubmitDataInterceptor**: Manipulate data before it's sent to the server.
 
+- **Prevent Unload**: Can prevent from exiting or reloading a form if it has changes or values are not saved.
+
 With `@xmanscript/useform`, handling forms in your React applications becomes more flexible and efficient.
 
 
