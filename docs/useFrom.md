@@ -57,13 +57,13 @@ import { useForm } from "@xmanscript/useform";
     });
   ```
 
--OR apply validation function
+-OR apply validation function, which can be both asyncronous and syncronous.
 
 ```ts
 const { register } = useForm({
     formName: 'user_detail_form',
     initialValues:{ fullName: 'Harka Bahadur', gender: 'male' },
-    validationSchema: (values) => {
+    validationSchema: /* async */(values, /* yupvalidator */) => { // yupvalidator is also passed as second paramter if it is a asyncronous function
       const error: Record<string, any> = {};
       if (!values.fullName) error.fullName = 'Full Name is Required';
       if (!values.gender) error.gender = 'Gender is Required';

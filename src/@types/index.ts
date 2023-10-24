@@ -165,3 +165,16 @@ export interface IUseFormInputProps {
   // preFillerFn?: SyncPrefillerFunction | AsyncPrefillerFunction;
   // controlFillers?: Record<string, (() => Promise<any>) | (() => any)>;
 }
+
+type YupValidatorType = (
+  validationSchema: Schema<any, any, any, ''>,
+  values: Record<string, any>
+) => Promise<Record<string, any>>;
+
+export type ValidateFormValuesProps = {
+  validationSchema:
+    | Schema<any>
+    | ((props: Record<string, unknown>) => Record<string, any>) // syncronous will return error object
+    | ((props: Record<string, unknown>, yupValidator?: YupValidatorType) => Promise<Record<string, any>>); // asyncronous will receive promise with error object
+  values: Record<string, any>;
+};
