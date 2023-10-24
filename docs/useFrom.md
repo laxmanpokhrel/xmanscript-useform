@@ -216,8 +216,7 @@ By default form is validated when the value changes and before submiting form. W
 * Every function that receives `sandBoxObject` will receive the `parcel` object.
 
 12. `settings`:
-    - **Description**: This object accepts settings related to `DEBOUNCE_TIME`, `SCROLL_DELAY`.`DEBOUNCE_TIME` determines the debounce time for form validation. The default value is 300 milliseconds. `SCROLL_DELAY` determines the delay in scroll to error control.
-
+    - **Description**: This object accepts settings related to `DEBOUNCE_TIME`, `SCROLL_DELAY`, `parcel`, `preventUnload`. `DEBOUNCE_TIME` determines the debounce time for form validation. The default value is 300 milliseconds. `SCROLL_DELAY` determines the delay in scroll to error control. `parcel` is the object that you want to pass in to every form inside that form context. And `preventUnload` is a `boolean` value which if set to `true` indicates that the form will not allow to reload the page if it has changes in it's values or it has unsaved changes.
 
 
 The `useForm` function also provides the following output attributes:

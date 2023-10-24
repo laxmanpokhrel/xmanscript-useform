@@ -19,7 +19,7 @@ const FormProvider = (formProviderProps?: FormProviderPropsType) => {
   const [formState, setFormState] = React.useState(fromContextInitialState);
 
   // this variable is for the internal use of context only
-  // function to sset the meta data
+  // function to set the meta data
   function setMetaData(key: string, value: Record<string, any>) {
     metaData = { ...metaData, [key]: { ...metaData[key], ...value } };
   }

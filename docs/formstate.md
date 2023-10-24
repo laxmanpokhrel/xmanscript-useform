@@ -24,3 +24,11 @@ When working with forms using `useForm`, you can access various states to handle
 5. **`hasError` (boolean):**
    - Determines whether the form currently has any errors.
    - `true` if there are errors in the form, `false` if it's error-free.
+
+6. **`hasChanges` (boolean):**
+   - Determines whether the form has any changes in it's values.
+   - `true` if there are changes in the form, `false` if it's change-free.
+
+7. **`isSubmissionSuccess` (boolean):**
+   - Indicates whether a submission was successful.
+   - `true` if there is a submission success, `false` otherwise.

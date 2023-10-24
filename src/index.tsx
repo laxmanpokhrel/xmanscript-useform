@@ -21,6 +21,7 @@ import FormProvider from './context/FormProvider';
 import formContext from './context/formContext';
 import { defaultFormState } from './constants';
 import useFormContextData from './hooks/useFormContextData';
+import usePreventReload from './hooks/usePreventUnload';
 
 function useForm({
   formName,
@@ -34,8 +35,6 @@ function useForm({
   onChangeInterceptor,
   onSubmitDataInterceptor,
   isNestedForm,
-  // preFillerFn,
-  // controlFillers,
   preFill,
   parcel,
   persistValues,
@@ -50,6 +49,9 @@ function useForm({
   const [controlFilling, setControlFilling] = React.useState<Record<string, boolean>>({});
 
   const formContextState = React.useContext(formContext);
+
+  // hook to prevent form from unloading
+  usePreventReload(formName, !!(settings ? settings.preventUnload : false || formContextState?.settings.preventUnload));
 
   // function to reset form
   function resetForm() {
@@ -107,7 +109,11 @@ function useForm({
   React.useEffect(() => {
     if (!formContextState) return;
     formContextState?.updateFormValues({ formName, update: values });
-  }, [values]);
+    formContextState?.updateFormState({
+      formName,
+      update: { hasChanges: !!Object.keys(getDifferenceObject(initial, values)).length },
+    });
+  }, [values, initial]);
 
   // update the state of the  context when state changes
   React.useEffect(() => {
@@ -286,10 +292,12 @@ function useForm({
             sandBoxObject
           );
         }
+        // form submission success
+        setFormState(prev => ({ ...prev, isSubmitionSuccess: true }));
       }
     } catch (error: any) {
       // set submition status
-      setFormState(prev => ({ ...prev, isSubmitionError: true, submitionError: error }));
+      setFormState(prev => ({ ...prev, isSubmitionError: true, isSubmitionSuccess: false, submitionError: error }));
       throw new Error(`Error While Submiting Form. ${error}`);
     } finally {
       // set submitting status
@@ -322,6 +330,7 @@ function useForm({
             : true,
         }));
       }
+
       // if onChangeInterceptor is applied then we transfer the flow to the interceptor and set the values returned by the interceptor to the form values
       if (onChangeInterceptor) {
         let interceptedValues: Record<string, any> = {};
