@@ -1,0 +1,1 @@
+{"version":3,"file":"isAsyncFunction.js","sourceRoot":"","sources":["../../src/utils/isAsyncFunction.ts"],"names":[],"mappings":";AAAA,iDAAiD;AACjD,6CAA6C;;;AAE7C,2DAA2D;AAC3D,uCAAuC;AACvC,IAAI;AAEJ,SAAS,eAAe,CAAC,EAAO;IAC9B,MAAM,QAAQ,GAAG,EAAE,CAAC,QAAQ,EAAE,CAAC;IAC/B,yCAAyC;IACzC,OAAO,uBAAuB,CAAC,IAAI,CAAC,QAAQ,CAAC,CAAC;AAChD,CAAC;AAEQ,0CAAe"}
