@@ -314,8 +314,8 @@ function useForm({
 
     // to handle value change
     function onChange(event: any) {
-      const hasTargetValue = event instanceof Event || !!event?.target?.value;
-      const hasPropagationMethod = event.hasOwnProperty('stopPropagation');
+      // const hasTargetValue = event instanceof Event || !!event?.target?.value;
+      // const hasPropagationMethod = event.hasOwnProperty('stopPropagation');
 
       // there is `setEnable` function or value
       if (registerParamProps && registerParamProps?.setEnable) {
@@ -324,7 +324,8 @@ function useForm({
           [controlName]: registerParamProps?.setEnable
             ? typeof registerParamProps.setEnable === 'function'
               ? registerParamProps.setEnable({
-                  bindValue: hasTargetValue ? event.target.value : event,
+                  // bindValue: hasTargetValue ? event.target.value : event,
+                  bindValue: event?.target?.value || event,
                   values,
                 })
               : typeof registerParamProps.setEnable === 'boolean'
@@ -337,49 +338,49 @@ function useForm({
       // if onChangeInterceptor is applied then we transfer the flow to the interceptor and set the values returned by the interceptor to the form values
       if (onChangeInterceptor) {
         let interceptedValues: Record<string, any> = {};
-        if (hasTargetValue) {
-          interceptedValues = onChangeInterceptor(
-            {
-              values: {
-                ...values,
-                [controlName]: registerParamProps?.setCustomValue
-                  ? registerParamProps.setCustomValue(event.target.value, sandBoxObject)
-                  : event.target.value,
-              },
-              touchedErrors,
-              errors,
-              touchedControls,
+        // if (hasTargetValue) {
+        interceptedValues = onChangeInterceptor(
+          {
+            values: {
+              ...values,
+              [controlName]: registerParamProps?.setCustomValue
+                ? registerParamProps.setCustomValue(event?.target?.value || event, sandBoxObject)
+                : event?.target?.value || event,
             },
-            sandBoxObject
-          );
-        } else {
-          interceptedValues = onChangeInterceptor(
-            {
-              values: {
-                ...values,
-                [controlName]: registerParamProps?.setCustomValue
-                  ? registerParamProps.setCustomValue(event, sandBoxObject)
-                  : event,
-              },
-              touchedErrors,
-              errors,
-              touchedControls,
-            },
-            sandBoxObject
-          );
-        }
+            touchedErrors,
+            errors,
+            touchedControls,
+          },
+          sandBoxObject
+        );
+        // } else {
+        //   interceptedValues = onChangeInterceptor(
+        //     {
+        //       values: {
+        //         ...values,
+        //         [controlName]: registerParamProps?.setCustomValue
+        //           ? registerParamProps.setCustomValue(event, sandBoxObject)
+        //           : event,
+        //       },
+        //       touchedErrors,
+        //       errors,
+        //       touchedControls,
+        //     },
+        //     sandBoxObject
+        //   );
+        // }
         setValues(interceptedValues);
 
         // we do not continue executing after this
         return;
       }
 
-      if (hasPropagationMethod) event.stopPropagation();
+      // if (hasPropagationMethod) event.stopPropagation();
       const valuesToUpdate = {
         ...values,
         [controlName]: registerParamProps?.setCustomValue
-          ? registerParamProps.setCustomValue(hasTargetValue ? event.target.value : event, sandBoxObject)
-          : event.target.value,
+          ? registerParamProps.setCustomValue(event?.target?.value || event, sandBoxObject)
+          : event?.target?.value,
       };
       // update the values
       setValues(valuesToUpdate);
