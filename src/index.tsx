@@ -375,7 +375,7 @@ function useForm({
         return;
       }
 
-      // if (hasPropagationMethod) event.stopPropagation();
+      //! if (hasPropagationMethod) event.stopPropagation();
       const valuesToUpdate = {
         ...values,
         [controlName]: registerParamProps?.setCustomValue
