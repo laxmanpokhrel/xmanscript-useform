@@ -56,6 +56,7 @@ function useForm({
 
   // function to reset form
   function resetForm() {
+    console.log('inside resetForm');
     setValues(initialValues);
     setErrors({});
     setTouchedErrors({});
@@ -77,7 +78,10 @@ function useForm({
 
   // for persisting or initializing form values
   React.useEffect(() => {
-    if (!formContextState) console.error('Persisting values works within a component wrapped with FormProvider only.');
+    if (!formContextState || !persistValues) {
+      console.error('Persisting values works within a component wrapped with FormProvider only.');
+      return;
+    }
     if (persistValues && formContextState) {
       // register form to context
       // get the form values from the context

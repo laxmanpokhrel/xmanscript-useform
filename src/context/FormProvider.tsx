@@ -27,7 +27,7 @@ const FormProvider = (formProviderProps?: FormProviderPropsType) => {
   // function to initialize form to context
   function initializeFormToContext(formName: string) {
     // check if the form name already exists
-    if (formNameCache.get(formName)) throw new Error('Duclicate form name. Please add a unique form name.');
+    if (formNameCache.get(formName)) throw new Error('Dublicate form name. Please add a unique form name.');
     else formNameCache.set(formName, {});
     setFormState(prev => ({ ...prev, [formName]: singleFormInitialState }));
   }
@@ -36,7 +36,7 @@ const FormProvider = (formProviderProps?: FormProviderPropsType) => {
   function updateFormState({ formName, update }: UpdateFormStateProps) {
     setFormState(prev => ({
       ...prev,
-      [formName]: { ...prev[formName], state: { ...prev[formName].state, ...update } },
+      [formName]: { ...prev[formName], state: { ...prev[formName]?.state, ...update } },
     }));
   }
 
@@ -44,7 +44,7 @@ const FormProvider = (formProviderProps?: FormProviderPropsType) => {
   function updateFormErrors({ formName, update }: UpdateFormStateProps) {
     setFormState(prev => ({
       ...prev,
-      [formName]: { ...prev[formName], errors: { ...prev[formName].errors, ...update } },
+      [formName]: { ...prev[formName], errors: { ...prev[formName]?.errors, ...update } },
     }));
   }
 
@@ -52,7 +52,7 @@ const FormProvider = (formProviderProps?: FormProviderPropsType) => {
   function updateFormTouchedErrors({ formName, update }: UpdateFormStateProps) {
     setFormState(prev => ({
       ...prev,
-      [formName]: { ...prev[formName], touchedErrors: { ...prev[formName].touchedErrors, ...update } },
+      [formName]: { ...prev[formName], touchedErrors: { ...prev[formName]?.touchedErrors, ...update } },
     }));
   }
 
@@ -60,7 +60,7 @@ const FormProvider = (formProviderProps?: FormProviderPropsType) => {
   function updateFormValues({ formName, update }: UpdateFormDataProps) {
     setFormState(prev => ({
       ...prev,
-      [formName]: { ...prev[formName], values: { ...prev[formName].values, ...update } },
+      [formName]: { ...prev[formName], values: { ...prev[formName]?.values, ...update } },
     }));
   }
 
