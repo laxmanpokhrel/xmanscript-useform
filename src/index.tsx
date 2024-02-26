@@ -5,8 +5,9 @@
 /* eslint-disable no-nested-ternary */
 /* eslint-disable react-hooks/exhaustive-deps */
 import * as React from 'react';
-// import { getDifferenceObject, intersectObjects, scrollToComponent } from '@xmanscript/utils';
 import getDifferenceObject from '@xmanscript/utils/getDifferenceObject';
+import intersectObjects from '@xmanscript/utils/intersectObjects';
+import scrollToComponent from '@xmanscript/utils/scrollToComponent';
 
 import {
   ISandBoxObject,
