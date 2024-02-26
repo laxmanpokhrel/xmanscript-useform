@@ -5,7 +5,9 @@
 /* eslint-disable no-nested-ternary */
 /* eslint-disable react-hooks/exhaustive-deps */
 import * as React from 'react';
-import { getDifferenceObject, intersectObjects, scrollToComponent } from '@xmanscript/utils';
+// import { getDifferenceObject, intersectObjects, scrollToComponent } from '@xmanscript/utils';
+import getDifferenceObject from '@xmanscript/utils/getDifferenceObject';
+
 import {
   ISandBoxObject,
   IUseFormInputProps,
@@ -14,6 +16,7 @@ import {
   UseFormOutputType,
   formStateType,
 } from './@types';
+
 import useDebouncedValidation from './hooks/useDebouncedValidation';
 import { getControlId } from './utils/validateValueWithYupSchema';
 import { isAsyncFunction } from './utils/isAsyncFunction';
@@ -330,8 +333,8 @@ function useForm({
                   values,
                 })
               : typeof registerParamProps.setEnable === 'boolean'
-              ? registerParamProps.setEnable
-              : true
+                ? registerParamProps.setEnable
+                : true
             : true,
         }));
       }

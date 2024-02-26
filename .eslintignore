@@ -9,3 +9,4 @@ src/assets
 tailwind.config.js
 app.tsx
 lib
+index.d.ts
