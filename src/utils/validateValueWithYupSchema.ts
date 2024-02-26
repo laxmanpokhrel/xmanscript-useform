@@ -1,4 +1,4 @@
-import { convertNestedKeysToObject } from '@xmanscript/utils';
+import convertNestedKeysToObject from '@xmanscript/utils/convertNestedKeysToObject';
 import { Schema } from 'yup';
 import { IYupError } from '../@types';
 
