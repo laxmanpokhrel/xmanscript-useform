@@ -2,3 +2,4 @@
 - With changed github workflow
 - version dependency warning solve
 - Subpath import of @xmanscript/utils
+- version name changed
