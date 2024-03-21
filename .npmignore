@@ -1,7 +1,6 @@
 # Ignore source files
-src/
-*.js
-*.ts
+src/*
+src
 
 # Ignore development tools and configuration files
 node_modules/

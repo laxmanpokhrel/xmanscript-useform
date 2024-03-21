@@ -1,5 +1,2 @@
 # Changes
-- With changed github workflow
-- version dependency warning solve
-- Subpath import of @xmanscript/utils
-- version name changed
+- npm ignore file changes to not ignore .js and .ts file
