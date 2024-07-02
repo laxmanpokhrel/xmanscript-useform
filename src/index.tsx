@@ -302,7 +302,7 @@ function useForm({
           );
         }
         // form submission success
-        setFormState(prev => ({ ...prev, isSubmitionSuccess: true }));
+        setFormState(prev => ({ ...prev, isSubmitionSuccess: true, isSubmitionError: false, submitionError: null }));
       }
     } catch (error: any) {
       // set submition status

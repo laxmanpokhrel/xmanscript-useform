@@ -1,14 +1,12 @@
 # Ignore source files
-src/
-*.js
-*.ts
+src/*
+src
 
 # Ignore development tools and configuration files
 node_modules/
 .git/
 .editorconfig
 .eslintrc
-tsconfig.json
 .github
 .husky
 .vscodes
