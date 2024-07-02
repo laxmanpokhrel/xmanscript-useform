@@ -1,2 +1,2 @@
 # Changes
-- npm ignore file changes to not ignore .js and .ts file
+- remove tsconfig from .npmgnore
