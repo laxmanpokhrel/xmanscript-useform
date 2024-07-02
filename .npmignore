@@ -7,7 +7,6 @@ node_modules/
 .git/
 .editorconfig
 .eslintrc
-tsconfig.json
 .github
 .husky
 .vscodes
