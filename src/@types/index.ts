@@ -61,7 +61,7 @@ export type UseFormOutputType = {
   formState: formStateType;
   register: (controlName: string, registerParamProps?: RegisterParamProps) => IRegisterOutputProps;
   onSubmitHandler: (
-    e: React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement, MouseEvent>
+    e?: React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => Promise<void>;
   setFormState: React.Dispatch<React.SetStateAction<formStateType>>;
   resetForm: () => void;
