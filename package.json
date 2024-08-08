@@ -1,6 +1,6 @@
 {
   "name": "@xmanscript/useform",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "Yet another useForm hook to confuse developers.",
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
